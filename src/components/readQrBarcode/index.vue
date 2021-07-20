@@ -36,7 +36,12 @@ export default {
 
         this.reader = new BrowserMultiFormatReader()
 
-        setTimeout( () => this.readLoop(), LOOP_INTERVAL )
+        setTimeout( () => {
+          if( !this.result ) {
+            this.readLoop()
+            // console.log( 'setTimeout' )
+          }
+        }, LOOP_INTERVAL )
       } )
       .catch( err => {
         // this.$alertManager.alert( '알림', '카메라를 사용할 수 없습니다.' ).promise.then( this.closeDialog )
@@ -65,12 +70,13 @@ export default {
       if( !this.video ) {
         return
       }
-
+      console.log(this.video.readyState ,this.video.HAVE_ENOUGH_DATA)
       try {
         if( this.video.readyState === this.video.HAVE_ENOUGH_DATA ) {
+          console.log('reader',this.reader)
           const result = this.reader.decode( this.video )
           if( result ) {
-            this.readCode= result
+            this.readCode = result
             return //읽었으면 종료
           }
         }
@@ -78,7 +84,12 @@ export default {
         console.error( 'QR/Barcode reading error', error )
       }
 
-      setTimeout( () => this.readLoop(), LOOP_INTERVAL )
+      setTimeout( () => {
+        if( !this.result ) {
+          this.readLoop()
+          // console.log( 'setTimeout' )
+        }
+      }, LOOP_INTERVAL )
     },
   }
 }
