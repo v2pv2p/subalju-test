@@ -1,4 +1,5 @@
 <template>
+  {{ readCode }}
   <video id="video" width="640" height="480" autoplay></video>
 </template>
 
@@ -19,6 +20,7 @@ export default {
       stream: null,
       video: null,
       reader: null,
+      readCode: ''
     }
   },
   mounted() {
