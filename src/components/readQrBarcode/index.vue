@@ -1,6 +1,8 @@
 <template>
-  {{ readCode }}
-  <video ref="video" width="640" height="480" autoplay></video>
+  <div>
+    {{ readCode }}
+    <video ref="video" width="640" height="480" autoPlay></video>
+  </div>
 </template>
 
 <script>
@@ -67,21 +69,22 @@ export default {
   },
   methods: {
     readLoop() {
-      if( !this.video ) {
+      if( !this.video || this.result ) {
         return
       }
-      console.log(this.video.readyState ,this.video.HAVE_ENOUGH_DATA)
       try {
+        console.log( 'decode', this.reader.decode( this.video ) )
         if( this.video.readyState === this.video.HAVE_ENOUGH_DATA ) {
-          console.log('reader',this.reader)
+          console.log( 'decode', this.reader.decode( this.video ) )
           const result = this.reader.decode( this.video )
           if( result ) {
             this.readCode = result
+            console.log( result )
             return //읽었으면 종료
           }
         }
       } catch( error ) {
-        console.error( 'QR/Barcode reading error', error )
+        // console.error( 'QR/Barcode reading error', error )
       }
 
       setTimeout( () => {

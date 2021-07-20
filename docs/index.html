@@ -1,0 +1,12 @@
+<!DOCTYPE html><html><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>webpack-test2</title><script>//globalThis polyfill : for zxing
+      (function() {
+        if( typeof globalThis === 'object' ) return;
+        Object.defineProperty(Object.prototype, '__magic__', {
+          get: function() {
+            return this;
+          },
+          configurable: true
+        });
+        __magic__.globalThis = __magic__;
+        delete Object.prototype.__magic__;
+      }());</script><link href=css/app.dfe61bd8d83d6a1857f77d412638e21d.css rel=stylesheet></head><body><div id=app></div><script type=text/javascript src=js/manifest.5abe310ef2fafcf81b83.js></script><script type=text/javascript src=js/vendor.7c955f69cf0b91652bcf.js></script><script type=text/javascript src=js/app.aa805fd9d0379258bb18.js></script></body></html>
