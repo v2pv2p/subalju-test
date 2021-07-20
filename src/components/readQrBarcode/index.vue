@@ -1,6 +1,6 @@
 <template>
   {{ readCode }}
-  <video id="video" width="640" height="480" autoplay></video>
+  <video ref="video" width="640" height="480" autoplay></video>
 </template>
 
 <script>

@@ -41,7 +41,7 @@ export default {
     }
   },
   created() {
-    this.getInitData()
+    // this.getInitData()
   },
   methods: {
     getInitData() {
