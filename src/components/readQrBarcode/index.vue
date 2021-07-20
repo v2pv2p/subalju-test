@@ -38,7 +38,6 @@ export default {
 
         this.reader = new BrowserMultiFormatReader()
         console.log( this.reader )
-
         setTimeout( () => {
           if( !this.result ) {
             this.readLoop()
