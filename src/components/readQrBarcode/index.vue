@@ -1,7 +1,7 @@
 <template>
   <div>
     {{ readCode }}
-    <video ref="video" width="640" height="480" autoPlay></video>
+    <video ref="video" width="350" height="350" autoPlay></video>
   </div>
 </template>
 
@@ -37,6 +37,7 @@ export default {
         this.video.play()
 
         this.reader = new BrowserMultiFormatReader()
+        console.log( this.reader )
 
         setTimeout( () => {
           if( !this.result ) {
