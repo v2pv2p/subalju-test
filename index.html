@@ -4,9 +4,24 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <title>webpack-test2</title>
+    <script>
+      //globalThis polyfill : for zxing
+      (function() {
+        if( typeof globalThis === 'object' ) return;
+        Object.defineProperty(Object.prototype, '__magic__', {
+          get: function() {
+            return this;
+          },
+          configurable: true
+        });
+        __magic__.globalThis = __magic__;
+        delete Object.prototype.__magic__;
+      }());
+    </script>
   </head>
   <body>
-    <div id="app"></div>
+    <div id="app">
+    </div>
     <!-- built files will be auto injected -->
   </body>
 </html>
