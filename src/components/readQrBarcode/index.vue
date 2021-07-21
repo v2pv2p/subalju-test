@@ -30,9 +30,15 @@ export default {
   mounted() {
     this.video = this.$refs['video']
 
-    navigator.mediaDevices.getUserMedia( { video: { facingMode: 'user' } } )
+    const videoSource = this.video.value
+    const constraints = {
+      video: { deviceId: videoSource ? { exact: videoSource } : undefined }
+    }
+    navigator.mediaDevices.getUserMedia( constraints ).then( this.gotStream ).then( this.gotDevices ).catch( e => {console.error( 'error : ' + e )} )
+
+    navigator.mediaDevices.getUserMedia( { video: { facingMode: 'environment' } } )
       .then( stream => {
-        this.device = stream
+        this.device = navigator.mediaDevices.enumerateDevices()
         this.stream = stream
 
         this.video.srcObject = stream
@@ -71,6 +77,20 @@ export default {
     }
   },
   methods: {
+    gotDevices( deviceInfos ) {
+      // Handles being called several times to update labels. Preserve values.
+      for( let i = 0; i !== deviceInfos.length; ++i ) {
+        const deviceInfo = deviceInfos[i]
+        this.device[i].value = deviceInfo.deviceId
+        this.device[i].text = deviceInfo.label
+      }
+    },
+    gotStream( stream ) {
+      window.stream = stream // make stream available to console
+      this.video.srcObject = stream
+      // Refresh button list in case labels have become available
+      return navigator.mediaDevices.enumerateDevices()
+    },
     readLoop() {
       if( !this.video || this.result ) {
         return
