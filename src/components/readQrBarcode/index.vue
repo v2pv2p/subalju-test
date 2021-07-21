@@ -1,7 +1,6 @@
 <template>
   <div class="read-qr-barcode">
-    <div> {{ selectedDevice }}</div>
-    <select v-model="selectedDevice" @change="changeVideoInput">
+    <select v-model="selectedDevice " @change="changeVideoInput">
       <option v-for="device in devices" :value="device">
         {{ device.label }}
       </option>
@@ -81,11 +80,10 @@ export default {
     gotStream( stream ) {
       window.stream = stream // make stream available to console
       this.video.srcObject = stream
-
       this.reader = new BrowserMultiFormatReader()
-      console.log( this.reader )
+
       setTimeout( () => {
-        if( !this.result ) {
+        if( !this.readCode ) {
           this.readLoop()
           // console.log( 'setTimeout' )
         }
@@ -99,9 +97,7 @@ export default {
         return
       }
       try {
-        console.log( 'decode', this.reader.decode( this.video ) )
         if( this.video.readyState === this.video.HAVE_ENOUGH_DATA ) {
-          console.log( 'decode', this.reader.decode( this.video ) )
           const result = this.reader.decode( this.video )
           if( result ) {
             this.readCode = result
@@ -110,11 +106,11 @@ export default {
           }
         }
       } catch( error ) {
-        // console.error( 'QR/Barcode reading error', error )
+        console.error( 'QR/Barcode reading error', error )
       }
 
       setTimeout( () => {
-        if( !this.result ) {
+        if( !this.readCode ) {
           this.readLoop()
           // console.log( 'setTimeout' )
         }
