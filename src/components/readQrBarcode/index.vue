@@ -84,6 +84,7 @@ export default {
         this.device[i].value = deviceInfo.deviceId
         this.device[i].text = deviceInfo.label
       }
+      console.log( this.device )
     },
     gotStream( stream ) {
       window.stream = stream // make stream available to console
