@@ -30,7 +30,6 @@ export default {
   mounted() {
     this.video = this.$refs['video']
 
-
     navigator.mediaDevices.getUserMedia( { video: { facingMode: 'environment' } } )
       .then( stream => {
         this.device = stream
@@ -113,8 +112,6 @@ export default {
     width: 100%;
     max-width: 350px;
     height: 350px;
-    object-fit: cover;
-    overflow: hidden;
   }
 }
 </style>
