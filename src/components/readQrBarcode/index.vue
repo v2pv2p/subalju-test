@@ -110,8 +110,8 @@ export default {
     max-width: 350px;
     height: 350px;
     object-fit: cover;
+    overflow: hidden;
   }
-
 }
 </style>
 
