@@ -1,11 +1,7 @@
 <template>
-  <div>
-    <div>
-      <video ref="video" width="350" height="350" autoPlay></video>
-    </div>
-    <div>
-      {{ readCode }}
-    </div>
+  <div className="read-qr-barcode">
+    {{ readCode }}
+    <video className="video" ref="video" width="350" height="350" autoPlay></video>
   </div>
 </template>
 
@@ -103,11 +99,17 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.read-qr-wrapper {
+.read-qr-barcode {
   height: 100%;
   overflow: hidden;
   position: relative;
   background-color: #808080;
+
+  .video {
+    width: 100%;
+    max-width: 350px;
+    height: 350px;
+  }
 
 }
 </style>
