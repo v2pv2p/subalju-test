@@ -1,5 +1,6 @@
 <template>
   <div className="read-qr-barcode">
+    {{ device }}
     {{ readCode }}
     <video className="video" ref="video" width="350" height="350" autoPlay></video>
   </div>
@@ -22,12 +23,14 @@ export default {
       stream: null,
       video: null,
       reader: null,
-      readCode: ''
+      readCode: '',
+      device: null
     }
   },
   mounted() {
     this.video = this.$refs['video']
 
+    this.device = navigator.mediaDevices
     navigator.mediaDevices.getUserMedia( { video: { facingMode: 'environment' } } )
       .then( stream => {
         this.stream = stream
