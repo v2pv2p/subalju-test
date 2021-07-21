@@ -109,6 +109,7 @@ export default {
     width: 100%;
     max-width: 350px;
     height: 350px;
+    object-fit: cover;
   }
 
 }
