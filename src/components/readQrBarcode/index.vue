@@ -1,8 +1,12 @@
 <template>
-  <div className="read-qr-barcode">
-    {{ device }}
+  <div class="read-qr-barcode">
+    <select v-model="selectedDeviceId">
+      <option v-for="device in devices" :value="device.deviceId">
+        {{ device.label }}
+      </option>
+    </select>
     {{ readCode }}
-    <video className="video" ref="video" width="350" height="350" autoPlay></video>
+    <video class="video" ref="video" width="350" height="350" autoPlay></video>
   </div>
 </template>
 
@@ -24,7 +28,8 @@ export default {
       video: null,
       reader: null,
       readCode: '',
-      device: null
+      selectedDeviceId: null,
+      devices: null
     }
   },
   mounted() {
@@ -38,7 +43,6 @@ export default {
 
     navigator.mediaDevices.getUserMedia( { video: { facingMode: 'environment' } } )
       .then( stream => {
-        this.device = navigator.mediaDevices.enumerateDevices()
         this.stream = stream
 
         this.video.srcObject = stream
@@ -77,13 +81,22 @@ export default {
     }
   },
   methods: {
-    gotDevices( deviceInfos ) {
-      // Handles being called several times to update labels. Preserve values.
-      for( let i = 0; i !== deviceInfos.length; ++i ) {
-        const deviceInfo = deviceInfos[i]
-        this.device[i].value = deviceInfo.deviceId
-        this.device[i].text = deviceInfo.label
+    changeVideoInput() {
+      if (window.stream) {
+        window.stream.getTracks().forEach(track => {
+          track.stop();
+        });
       }
+      const videoSource = this.selectedDeviceId;
+      const constraints = {
+        video: {deviceId: videoSource ? {exact: videoSource} : undefined}
+      };
+      navigator.mediaDevices.getUserMedia( constraints ).then( this.gotStream ).then( this.gotDevices ).catch( e => {console.error( 'error : ' + e )} )
+    },
+    gotDevices( deviceInfos ) {
+      this.devices = _.filter( deviceInfos, deviceInfo => {
+        return deviceInfo.kind === 'videoinput'
+      } )
       console.log( this.device )
     },
     gotStream( stream ) {
