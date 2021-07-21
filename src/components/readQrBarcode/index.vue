@@ -1,7 +1,8 @@
 <template>
   <div class="read-qr-barcode">
-    <select v-model="selectedDeviceId">
-      <option v-for="device in devices" :value="device.deviceId">
+    <div> {{ selectedDevice }}</div>
+    <select v-model="selectedDevice" @change="changeVideoInput">
+      <option v-for="device in devices" :value="device">
         {{ device.label }}
       </option>
     </select>
@@ -28,7 +29,7 @@ export default {
       video: null,
       reader: null,
       readCode: '',
-      selectedDeviceId: null,
+      selectedDevice: null,
       devices: null
     }
   },
@@ -66,11 +67,10 @@ export default {
           track.stop()
         } )
       }
-      const videoSource = this.selectedDeviceId
-      const constraints = {
-        video: { deviceId: videoSource ? { exact: videoSource } : undefined }
-      }
-      navigator.mediaDevices.getUserMedia( constraints ).then( this.gotStream ).then( this.gotDevices ).catch( e => {console.error( 'error : ' + e )} )
+      const videoSource = this.selectedDevice.deviceId
+      const constraints = { video: { deviceId: videoSource ? { exact: videoSource } : undefined } }
+
+      navigator.mediaDevices.enumerateDevices().then( this.gotDevices ).catch( e => {console.error( 'error : ' + e )} )
     },
     gotDevices( deviceInfos ) {
       this.devices = _.filter( deviceInfos, deviceInfo => {
