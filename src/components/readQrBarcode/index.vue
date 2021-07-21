@@ -70,7 +70,7 @@ export default {
       const videoSource = this.selectedDevice.deviceId
       const constraints = { video: { deviceId: videoSource ? { exact: videoSource } : undefined } }
 
-      navigator.mediaDevices.enumerateDevices().then( this.gotDevices ).catch( e => {console.error( 'error : ' + e )} )
+      navigator.mediaDevices.getUserMedia( constraints ).then( this.gotStream ).then( this.gotDevices ).catch( e => {console.error( 'error : ' + e )} )
     },
     gotDevices( deviceInfos ) {
       this.devices = _.filter( deviceInfos, deviceInfo => {
