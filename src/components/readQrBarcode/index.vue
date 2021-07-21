@@ -1,5 +1,6 @@
 <template>
   <div class="read-qr-barcode">
+    {{ result }}
     <div class="video-area">
       <video class="video" ref="video" height="100%"></video>
     </div>
@@ -13,7 +14,7 @@
       </div>
       <div class="top around">
         <div class="info-text">
-          {{ '실물카드의 QR코드/바코드를 인식해 주세요.' | t }}
+          {{ 'QR코드/바코드를 인식해 주세요.' }}
         </div>
       </div>
       <div class="bottom around"></div>
