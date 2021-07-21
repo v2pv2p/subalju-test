@@ -40,27 +40,6 @@ export default {
       video: { deviceId: videoSource ? { exact: videoSource } : undefined }
     }
     navigator.mediaDevices.getUserMedia( constraints ).then( this.gotStream ).then( this.gotDevices ).catch( e => {console.error( 'error : ' + e )} )
-
-    navigator.mediaDevices.getUserMedia( { video: { facingMode: 'environment' } } )
-      .then( stream => {
-        this.stream = stream
-
-        this.video.srcObject = stream
-        this.video.setAttribute( 'playsinline', true ) // required to tell iOS safari we don't want fullscreen
-        this.video.play()
-
-        this.reader = new BrowserMultiFormatReader()
-        console.log( this.reader )
-        setTimeout( () => {
-          if( !this.result ) {
-            this.readLoop()
-            // console.log( 'setTimeout' )
-          }
-        }, LOOP_INTERVAL )
-      } )
-      .catch( err => {
-        // this.$alertManager.alert( '알림', '카메라를 사용할 수 없습니다.' ).promise.then( this.closeDialog )
-      } )
   },
   beforeDestroy() {
     if( this.reader ) {
@@ -82,26 +61,36 @@ export default {
   },
   methods: {
     changeVideoInput() {
-      if (window.stream) {
-        window.stream.getTracks().forEach(track => {
-          track.stop();
-        });
+      if( window.stream ) {
+        window.stream.getTracks().forEach( track => {
+          track.stop()
+        } )
       }
-      const videoSource = this.selectedDeviceId;
+      const videoSource = this.selectedDeviceId
       const constraints = {
-        video: {deviceId: videoSource ? {exact: videoSource} : undefined}
-      };
+        video: { deviceId: videoSource ? { exact: videoSource } : undefined }
+      }
       navigator.mediaDevices.getUserMedia( constraints ).then( this.gotStream ).then( this.gotDevices ).catch( e => {console.error( 'error : ' + e )} )
     },
     gotDevices( deviceInfos ) {
       this.devices = _.filter( deviceInfos, deviceInfo => {
         return deviceInfo.kind === 'videoinput'
       } )
-      console.log( this.device )
+      console.log( this.devices )
     },
     gotStream( stream ) {
       window.stream = stream // make stream available to console
       this.video.srcObject = stream
+
+      this.reader = new BrowserMultiFormatReader()
+      console.log( this.reader )
+      setTimeout( () => {
+        if( !this.result ) {
+          this.readLoop()
+          // console.log( 'setTimeout' )
+        }
+      }, LOOP_INTERVAL )
+
       // Refresh button list in case labels have become available
       return navigator.mediaDevices.enumerateDevices()
     },
