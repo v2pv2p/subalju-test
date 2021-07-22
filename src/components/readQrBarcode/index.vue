@@ -43,8 +43,8 @@ export default {
     }
     navigator.mediaDevices.getUserMedia( constraints )
       .then( this.gotStream )
-      .then( ()=> {
-        this.gotDevices()
+      .then( ( deviceInfos ) => {
+        this.gotDevices( deviceInfos )
         setTimeout( () => this.quaggarStart(), LOOP_INTERVAL )
       } )
       .catch( e => {console.error( 'error : ' + e )} )
@@ -64,7 +64,7 @@ export default {
   },
   methods: {
     quaggarStart() {
-      if(this.readCode) {
+      if( this.readCode ) {
         return
       }
 
