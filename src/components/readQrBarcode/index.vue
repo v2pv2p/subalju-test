@@ -5,8 +5,11 @@
         {{ device.label }}
       </option>
     </select>
+    <div style="background-color: pink; width: 50px; height: 100px;" @click="readBarcode">shot</div>
     {{ readCode }}
-    <video class="video" ref="video" width="350" height="350" autoPlay></video>
+    <video class="video" ref="video" autoPlay></video>
+    <canvas ref="canvas"></canvas>
+    <img ref='canvasImgFile' :src="img">
   </div>
 </template>
 
@@ -29,7 +32,10 @@ export default {
       reader: null,
       readCode: '',
       selectedDevice: null,
-      devices: null
+      devices: null,
+      canvas: null,
+      context: null,
+      img: null
     }
   },
   mounted() {
@@ -75,47 +81,39 @@ export default {
       this.devices = _.filter( deviceInfos, deviceInfo => {
         return deviceInfo.kind === 'videoinput'
       } )
-      console.log( this.devices )
     },
     gotStream( stream ) {
       window.stream = stream // make stream available to console
       this.video.srcObject = stream
       this.reader = new BrowserMultiFormatReader()
 
-      setTimeout( () => {
-        if( !this.readCode ) {
-          this.readLoop()
-          // console.log( 'setTimeout' )
-        }
-      }, LOOP_INTERVAL )
-
       // Refresh button list in case labels have become available
       return navigator.mediaDevices.enumerateDevices()
     },
-    readLoop() {
-      if( !this.video || this.result ) {
-        return
-      }
+    readBarcode() {
+      this.canvas = this.$refs['canvas']
+      this.context = this.canvas.getContext( '2d' )
+      this.canvas.width = this.video.clientWidth
+      this.canvas.height = this.video.clientHeight
+      this.context.drawImage( this.video, 0, 0, this.canvas.width, this.canvas.height )
+      console.log( this.video.clientWidth )
+      console.log( this.video.clientHeight )
+      this.img = this.canvas.toDataURL()
 
       try {
         if( this.video.readyState === this.video.HAVE_ENOUGH_DATA ) {
-          const result = this.reader.decode( this.video )
-          if( result ) {
-            this.readCode = result
-            console.log( result )
-            return //읽었으면 종료
-          }
+          this.reader.decodeFromImage( this.$refs.canvasImgFile ).then( ( result ) => {
+            if( result ) {
+              this.readCode = result
+            }
+          } ).catch( ( err ) => {
+            console.error( err )
+          } )
         }
       } catch( error ) {
         console.error( 'QR/Barcode reading error', error )
       }
 
-      setTimeout( () => {
-        if( !this.readCode ) {
-          this.readLoop()
-          // console.log( 'setTimeout' )
-        }
-      }, LOOP_INTERVAL )
     },
   }
 }
@@ -124,9 +122,6 @@ export default {
 <style lang="scss" scoped>
 .read-qr-barcode {
   height: 100%;
-  overflow: hidden;
-  position: relative;
-  background-color: #808080;
 
   .video {
     width: 100%;
