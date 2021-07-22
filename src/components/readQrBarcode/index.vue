@@ -7,9 +7,6 @@
     </select>
     {{ readCode }}
     <video class="video" ref="video" width="350" height="350" autoPlay></video>
-    <div>
-      <canvas ref="canvas"></canvas>
-    </div>
   </div>
 </template>
 
@@ -22,12 +19,13 @@ const LOOP_INTERVAL = 20
 
 export default {
   name: 'readQrBarcode',
+  components: {
+    // StreamBarcodeReader,
+  },
   data() {
     return {
       stream: null,
       video: null,
-      canvasElement: null,
-      canvas: null,
       reader: null,
       readCode: '',
       selectedDevice: null,
@@ -36,14 +34,12 @@ export default {
   },
   mounted() {
     this.video = this.$refs['video']
-    this.canvasElement = this.$refs.canvas
-    this.canvas = this.canvasElement.getContext( '2d' )
 
     const videoSource = this.video.value
     const constraints = {
       video: { deviceId: videoSource ? { exact: videoSource } : undefined }
     }
-    navigator.mediaDevices.getUserMedia( constraints ).then( this.gotStream ).then( this.gotVideoDevices ).catch( e => {console.error( 'error : ' + e )} )
+    navigator.mediaDevices.getUserMedia( constraints ).then( this.gotStream ).then( this.gotDevices ).catch( e => {console.error( 'error : ' + e )} )
   },
   beforeDestroy() {
     if( this.reader ) {
@@ -73,20 +69,25 @@ export default {
       const videoSource = this.selectedDevice.deviceId
       const constraints = { video: { deviceId: videoSource ? { exact: videoSource } : undefined } }
 
-      navigator.mediaDevices.getUserMedia( constraints ).then( this.gotStream ).then( this.gotVideoDevices ).catch( e => {console.error( 'error : ' + e )} )
+      navigator.mediaDevices.getUserMedia( constraints ).then( this.gotStream ).then( this.gotDevices ).catch( e => {console.error( 'error : ' + e )} )
     },
-    gotVideoDevices( deviceInfos ) {
-      //
+    gotDevices( deviceInfos ) {
       this.devices = _.filter( deviceInfos, deviceInfo => {
         return deviceInfo.kind === 'videoinput'
       } )
+      console.log( this.devices )
     },
     gotStream( stream ) {
       window.stream = stream // make stream available to console
       this.video.srcObject = stream
       this.reader = new BrowserMultiFormatReader()
 
-      setTimeout( () => { if( !this.readCode ) { this.readLoop() } }, LOOP_INTERVAL )
+      setTimeout( () => {
+        if( !this.readCode ) {
+          this.readLoop()
+          // console.log( 'setTimeout' )
+        }
+      }, LOOP_INTERVAL )
 
       // Refresh button list in case labels have become available
       return navigator.mediaDevices.enumerateDevices()
@@ -95,44 +96,26 @@ export default {
       if( !this.video || this.result ) {
         return
       }
-      if( this.video.readyState === this.video.HAVE_ENOUGH_DATA ) {
-        const result = this.reader.decode( this.video )
-        // 읽어들이는 비디오 화면의 크기
-        this.canvasElement.height = this.video.videoHeight
-        this.canvasElement.width = this.video.videoWidth
-        this.canvas.drawImage( this.video, 0, 0, this.canvasElement.width, this.canvasElement.height )
 
-        if( result ) {
-          console.log( result )
-          // QR코드 인식에 성공한 경우
-          // 인식한 QR코드의 영역을 감싸는 사용자에게 보여지는 테두리 생성
-          this.drawLine( result.location.topLeftCorner, result.location.topRightCorner, '#FF0000' )
-          this.drawLine( result.location.topRightCorner, result.location.bottomRightCorner, '#FF0000' )
-          this.drawLine( result.location.bottomRightCorner, result.location.bottomLeftCorner, '#FF0000' )
-          this.drawLine( result.location.bottomLeftCorner, result.location.topLeftCorner, '#FF0000' )
-          console.log( 'location', result.location )
-          // QR코드 메시지 출력
-          this.readCode = result
-
-          return //읽었으면 종료
-        } else {
-          // QR코드 인식에 실패한 경우
+      try {
+        if( this.video.readyState === this.video.HAVE_ENOUGH_DATA ) {
+          const result = this.reader.decode( this.video )
+          if( result ) {
+            this.readCode = result
+            console.log( result )
+            return //읽었으면 종료
+          }
         }
+      } catch( error ) {
+        console.error( 'QR/Barcode reading error', error )
       }
 
       setTimeout( () => {
         if( !this.readCode ) {
           this.readLoop()
+          // console.log( 'setTimeout' )
         }
       }, LOOP_INTERVAL )
-    },
-    drawLine( begin, end, color ) {
-      this.canvas.beginPath()
-      this.canvas.moveTo( begin.x, begin.y )
-      this.canvas.lineTo( end.x, end.y )
-      this.canvas.lineWidth = 4
-      this.canvas.strokeStyle = color
-      this.canvas.stroke()
     },
   }
 }
