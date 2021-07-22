@@ -1,6 +1,6 @@
 <template>
   <div class="read-qr-barcode">
-    <v-quagga :onDetected="logIt" :readerSize="readerSize" :readerTypes="['ean_reader']"></v-quagga>
+    <vue-quagga :onDetected="logIt" :readerSize="readerSize" :readerTypes="['ean_reader']"></vue-quagga>
     {{ results }}
     <!--    <select v-model="selectedDevice " @change="changeVideoInput">-->
     <!--      <option v-for="device in devices" :value="device">-->
@@ -21,12 +21,14 @@ import _ from 'lodash'
 import Quagga from 'quagga'
 // import { StreamBarcodeReader } from 'vue-barcode-reader'
 import { BrowserMultiFormatReader } from '@zxing/library'
+import VueQuagga from 'vue-quaggajs';
 
 const LOOP_INTERVAL = 20
 
 export default {
   name: 'readQrBarcode',
   components: {
+    VueQuagga
     // StreamBarcodeReader,
   },
   data() {
