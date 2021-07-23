@@ -37,7 +37,17 @@ export default {
   mounted() {
     this.video = this.$refs['video']
 
-    this.changeVideoInput()
+    const videoSource = this.video.value
+    const constraints = {
+      video: { deviceId: videoSource ? { exact: videoSource } : undefined }
+    }
+    navigator.mediaDevices.getUserMedia( constraints )
+      .then( this.gotStream )
+      .then( ( deviceInfos ) => {
+        this.gotDevices( deviceInfos )
+        setTimeout( () => this.quaggarStart(), LOOP_INTERVAL )
+      } )
+      .catch( e => {console.error( 'error : ' + e )} )
   },
   beforeDestroy() {
     if( this.video ) {
