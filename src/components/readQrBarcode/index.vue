@@ -125,7 +125,9 @@ export default {
     gotStream( stream ) {
       window.stream = stream // make stream available to console
       this.video.srcObject = stream
-alert(stream)
+      this.video.setAttribute( 'playsinline', true ) // required to tell iOS safari we don't want fullscreen
+      this.video.play()
+      alert( stream )
       // Refresh button list in case labels have become available
       return navigator.mediaDevices.enumerateDevices()
     },
