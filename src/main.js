@@ -3,7 +3,10 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
-import _ from 'lodash'
+import PopupManager from './PopupManager.js'
+
+Vue.use( PopupManager ) //PopupManager 플러그인 설치
+
 
 Vue.config.productionTip = false
 

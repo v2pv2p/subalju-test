@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <router-view/>
+    <popup-anchor></popup-anchor>
   </div>
 </template>
 

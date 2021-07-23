@@ -1,33 +1,33 @@
 <template>
-  <div class="cm-wrapper">
-    <div>바코드</div>
-    <read-qr-barcode @readFinish="readFinish" style="width: 500px; height: 500px;"></read-qr-barcode>
-
-    <div>인원선택</div>
-    <div v-if="productInfoDataLoaded" style="background-color: pink">
-      <div v-for="product in productInfoOfBarcode">
-        {{ product }}
-      </div>
+  <div class="home-wrapper">
+    <div class="barcode-area">
+      <div class="barcode-title">제품 추가</div>
+      <div class="barcode-scan-btn" @click="barcodeScan">바코드 스캔</div>
     </div>
-    <div v-else style="background-color: pink">로딩중</div>
 
-    <div v-if="productSaleInfoDataLoaded" style="background-color: green">
-      <div v-for="product in productSaleInfoOfBarcode">
-        {{ product }}
-      </div>
-    </div>
-    <div v-else style="background-color: green">로딩중</div>
+    <!--    <div v-if="productInfoDataLoaded" style="background-color: pink">-->
+    <!--      <div v-for="product in productInfoOfBarcode">-->
+    <!--        {{ product }}-->
+    <!--      </div>-->
+    <!--    </div>-->
+    <!--    <div v-else style="background-color: pink">로딩중</div>-->
+
+    <!--    <div v-if="productSaleInfoDataLoaded" style="background-color: green">-->
+    <!--      <div v-for="product in productSaleInfoOfBarcode">-->
+    <!--        {{ product }}-->
+    <!--      </div>-->
+    <!--    </div>-->
+    <!--    <div v-else style="background-color: green">로딩중</div>-->
   </div>
 
 </template>
 
 <script>
 import req2svr from './req2svr'
-import ReadQrBarcode from '@/components/readQrBarcode'
+import addQrBarcode from '@/popup/addQrBarcode'
 
 export default {
   name: 'home',
-  components: { ReadQrBarcode },
   computed: {
     req2svr: () => req2svr
   },
@@ -38,12 +38,16 @@ export default {
       productInfoDataLoaded: false,
       productSaleInfoDataLoaded: false,
       barcode: '8802039211424',
+      isShowReadBarcode: false
     }
   },
   created() {
     // this.getInitData()
   },
   methods: {
+    barcodeScan() {
+      this.$popupManager.open( addQrBarcode )
+    },
     getInitData() {
       this.getProductInfoOfBarcode()
       this.getProductSaleInfoOfBarcode()
@@ -82,14 +86,32 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-.cm-wrapper {
+.home-wrapper {
   height: 100%;
   width: 100%;
 
   //background-color: #42b983;
+  .barcode-area {
+    .barcode-title {
+      display: flex;
+      justify-content: center;
+      align-items: center;
 
-  .canvas {
-    border: 1px solid #000000;
+      margin-bottom: 30px;
+
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .barcode-scan-btn {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      padding: 5px 10px;
+      background-color: #42b983;
+    }
   }
+
 }
 </style>
