@@ -5,9 +5,9 @@
         {{ device.label }}
       </option>
     </select>
-    <div style="background-color: pink; width: 50px; height: 100px;" @click="quaggarStart">shot</div>
-    {{ readCode }}
     <video class="video" ref="video" autoPlay></video>
+    <div style="background-color: pink; width: 50px; height: 100px;" @click="quaggarStart">shot{{ readCode }}</div>
+
     <canvas ref="canvas"></canvas>
     <img ref='canvasImgFile' :src="img">
   </div>
@@ -94,6 +94,7 @@ export default {
               console.log( 'not detected' )
             }
           } )
+          setTimeout( () => this.quaggarStart(), LOOP_INTERVAL )
         }
       } catch( e ) {
 
