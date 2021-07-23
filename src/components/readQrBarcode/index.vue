@@ -37,17 +37,7 @@ export default {
   mounted() {
     this.video = this.$refs['video']
 
-    const videoSource = this.video.value
-    const constraints = {
-      video: { deviceId: videoSource ? { exact: videoSource } : undefined }
-    }
-    navigator.mediaDevices.getUserMedia( constraints )
-      .then( this.gotStream )
-      .then( ( deviceInfos ) => {
-        this.gotDevices( deviceInfos )
-        setTimeout( () => this.quaggarStart(), LOOP_INTERVAL )
-      } )
-      .catch( e => {console.error( 'error : ' + e )} )
+    this.changeVideoInput()
   },
   beforeDestroy() {
     if( this.video ) {
@@ -100,17 +90,23 @@ export default {
       }
 
     },
-    // changeVideoInput() {
-    //   if( window.stream ) {
-    //     window.stream.getTracks().forEach( track => {
-    //       track.stop()
-    //     } )
-    //   }
-    //   const videoSource = this.selectedDevice.deviceId
-    //   const constraints = { video: { deviceId: videoSource ? { exact: videoSource } : undefined } }
-    //
-    //   navigator.mediaDevices.getUserMedia( constraints ).then( this.gotStream ).then( this.gotDevices ).catch( e => {console.error( 'error : ' + e )} )
-    // },
+    changeVideoInput() {
+      if( window.stream ) {
+        window.stream.getTracks().forEach( track => {
+          track.stop()
+        } )
+      }
+      const videoSource = this.selectedDevice.deviceId
+      const constraints = { video: { deviceId: videoSource ? { exact: videoSource } : undefined } }
+
+      navigator.mediaDevices.getUserMedia( constraints )
+        .then( this.gotStream )
+        .then( ( deviceInfos ) => {
+          this.gotDevices( deviceInfos )
+          setTimeout( () => this.quaggarStart(), LOOP_INTERVAL )
+        } )
+        .catch( e => {console.error( 'error : ' + e )} )
+    },
     gotDevices( deviceInfos ) {
       this.devices = _.filter( deviceInfos, deviceInfo => {
         return deviceInfo.kind === 'videoinput'
