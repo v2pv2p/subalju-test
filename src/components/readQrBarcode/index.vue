@@ -45,7 +45,7 @@ export default {
   mounted() {
     this.video = this.$refs['video']
     this.videoSource = this.video.value
-    
+
     this.getVideoInput()
   },
   beforeDestroy() {
@@ -57,6 +57,7 @@ export default {
   methods: {
     changeVideoInput() {
       this.videoSource = this.selectedDevice.deviceId
+      this.getVideoInput()
     },
     getVideoInput() {
       const constraints = { video: { deviceId: this.videoSource ? { exact: this.videoSource } : undefined } }
