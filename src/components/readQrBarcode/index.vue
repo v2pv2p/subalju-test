@@ -15,6 +15,8 @@
         </select>
       </div>
     </div>
+    꾸유ㅜ우아아
+
   </div>
 </template>
 
@@ -122,8 +124,6 @@ export default {
 
 <style lang="scss" scoped>
 .read-qr-barcode {
-  height: 100%;
-
   .device-select-area {
     display: flex;
 
