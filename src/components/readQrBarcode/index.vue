@@ -1,5 +1,11 @@
 <template>
   <div class="read-qr-barcode">
+    <div class="stream-area">
+      <video class="video" ref="video" autoPlay></video>
+      <canvas class="canvas" ref="canvas"></canvas>
+      <img class="image" ref='canvasImgFile' :src="img">
+    </div>
+
     <div class="device-select-area">
       <div class="device-select">
         <select v-model="selectedDevice" @change="changeVideoInput">
@@ -9,13 +15,6 @@
         </select>
       </div>
     </div>
-
-    <div class="stream-area">
-      <video class="video" ref="video" autoPlay></video>
-      <canvas class="canvas" ref="canvas"></canvas>
-      <img class="image" ref='canvasImgFile' :src="img">
-    </div>
-
   </div>
 </template>
 

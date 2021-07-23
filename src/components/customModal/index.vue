@@ -14,8 +14,6 @@
 
 <style scoped lang="scss">
 .modal {
-  width: 100%;
-  height: 100%;
   &.modal-overlay {
     display: flex;
     align-items: center;
