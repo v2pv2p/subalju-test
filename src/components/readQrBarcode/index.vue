@@ -138,9 +138,6 @@ export default {
 
   .stream-area {
     .video {
-      width: 100%;
-      max-width: 350px;
-      height: auto;
     }
 
     .canvas {

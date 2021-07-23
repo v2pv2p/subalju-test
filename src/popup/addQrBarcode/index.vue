@@ -28,9 +28,6 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 .add-qr-barcode {
-  height: 100%;
-  width: 100%;
-
   background-color: goldenrod;
   .barcode-area {
     .barcode-title {
