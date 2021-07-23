@@ -108,6 +108,7 @@ export default {
           }, ( result ) => {
             if( _.get( result, 'codeResult' ) ) {
               this.readCode = _.get( result, 'codeResult.code' )
+              this.$emit( codeResult, this.readCode )
             } else {
               console.log( 'not detected' )
               setTimeout( () => this.quaggarStart(), LOOP_INTERVAL )
