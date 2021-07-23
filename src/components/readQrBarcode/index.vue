@@ -1,7 +1,6 @@
 <template>
   <div class="read-qr-barcode">
     <div class="device-select-area">
-      <div class="device-select-title"></div>
       <div class="device-select">
         <select v-model="selectedDevice" @change="changeVideoInput">
           <option v-for="device in devices" :value="device">
@@ -11,10 +10,10 @@
       </div>
     </div>
 
-    <div>
+    <div class="stream-area">
       <video class="video" ref="video" autoPlay></video>
-      <canvas ref="canvas"></canvas>
-      <img ref='canvasImgFile' :src="img">
+      <canvas class="canvas" ref="canvas"></canvas>
+      <img class="image" ref='canvasImgFile' :src="img">
     </div>
 
   </div>
@@ -57,7 +56,6 @@ export default {
   methods: {
     changeVideoInput() {
       this.videoSource = this.selectedDevice.deviceId
-      this.getVideoInput()
     },
     getVideoInput() {
       const constraints = { video: { deviceId: this.videoSource ? { exact: this.videoSource } : undefined } }
@@ -100,7 +98,7 @@ export default {
             src: this.img,
             numOfWorkers: 0,  // Needs to be 0 when used within node
             inputStream: {
-              size: 800  // restrict input-size to be 800px in width (long-side)
+              size: this.video.clientWidth  // restrict input-size to be 800px in width (long-side)
             },
             decoder: {
               readers: ['ean_reader'] // List of active readers
@@ -108,7 +106,7 @@ export default {
           }, ( result ) => {
             if( _.get( result, 'codeResult' ) ) {
               this.readCode = _.get( result, 'codeResult.code' )
-              this.$emit( 'codeResult', this.readCode )
+              this.$emit( 'codeResult', result )
             } else {
               console.log( 'not detected' )
               setTimeout( () => this.quaggarStart(), LOOP_INTERVAL )
@@ -139,11 +137,22 @@ export default {
     }
   }
 
-  .video {
-    width: 100%;
-    max-width: 350px;
-    height: auto;
+  .stream-area {
+    .video {
+      width: 100%;
+      max-width: 350px;
+      height: auto;
+    }
+
+    .canvas {
+      visibility: hidden
+    }
+
+    .image {
+      visibility: hidden
+    }
   }
+
 }
 </style>
 

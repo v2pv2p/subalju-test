@@ -1,7 +1,6 @@
 <template>
-  <div class="home-wrapper">
+  <div class="add-qr-barcode">
     <div class="barcode-area">
-      <div class="barcode-title">제품 추가</div>
       <read-qr-barcode @codeResult="close"></read-qr-barcode>
     </div>
   </div>
@@ -20,7 +19,7 @@ export default {
   },
   methods: {
     close( readResult ) {
-      this.$popupManager.close( this, readResult )
+      this.$emit('readResult', readResult)
     }
   }
 }
@@ -28,11 +27,11 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-.home-wrapper {
+.add-qr-barcode {
   height: 100%;
   width: 100%;
 
-  //background-color: #42b983;
+  background-color: goldenrod;
   .barcode-area {
     .barcode-title {
       display: flex;
