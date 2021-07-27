@@ -1,7 +1,8 @@
 <template>
   <div class="add-qr-barcode">
+    <div @click="closePopup">close</div>
     <div class="barcode-area">
-      <read-qr-barcode @codeResult="close"></read-qr-barcode>
+      <read-qr-barcode @codeResult="setCodeResult"></read-qr-barcode>
     </div>
   </div>
 
@@ -13,13 +14,18 @@ import ReadQrBarcode from '@/components/readQrBarcode'
 export default {
   name: 'addQrBarcode',
   components: { ReadQrBarcode },
-  computed: {},
-  created() {
-    // this.getInitData()
+  data() {
+    return {
+      barcode: ''
+    }
   },
   methods: {
-    close( readResult ) {
-      this.$emit('readResult', readResult)
+    setCodeResult( codeResult ) {
+      this.barcode = _.get( codeResult, 'codeResult.code' )
+      this.closePopup()
+    },
+    closePopup() {
+      this.$popupManager.close( this, this.barcode )
     }
   }
 }
@@ -28,28 +34,28 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 .add-qr-barcode {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+
   background-color: goldenrod;
-  .barcode-area {
-    .barcode-title {
-      display: flex;
-      justify-content: center;
-      align-items: center;
 
-      margin-bottom: 30px;
-
-      font-size: 20px;
-      font-weight: bold;
-    }
-
-    .barcode-scan-btn {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-
-      padding: 5px 10px;
-      background-color: #42b983;
-    }
+  & /deep/ .fpm--modal {
+    height: 100%;
   }
 
+  & > > > .fpm--modal {
+    height: 100%;
+  }
+
+  & /deep/ .fpm--modal-overlay {
+    height: 100%;
+  }
+
+  & > > > .fpm--modal-overlay {
+    height: 100%;
+  }
 }
+
+
 </style>

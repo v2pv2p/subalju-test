@@ -1,11 +1,5 @@
 <template>
   <div class="read-qr-barcode">
-    <div class="stream-area">
-      <video class="video" ref="video" autoPlay></video>
-      <canvas class="canvas" ref="canvas"></canvas>
-      <img class="image" ref='canvasImgFile' :src="img">
-    </div>
-
     <div class="device-select-area">
       <div class="device-select">
         <select v-model="selectedDevice" @change="changeVideoInput">
@@ -15,7 +9,12 @@
         </select>
       </div>
     </div>
-    꾸유ㅜ우아아
+
+    <div class="stream-area">
+      <video class="video" ref="video" autoPlay></video>
+      <canvas class="canvas" ref="canvas" v-show="false"></canvas>
+      <img class="image" ref='canvasImgFile' :src="img" v-show="false">
+    </div>
 
   </div>
 </template>
@@ -57,6 +56,7 @@ export default {
   methods: {
     changeVideoInput() {
       this.videoSource = this.selectedDevice.deviceId
+      this.getVideoInput()
     },
     getVideoInput() {
       const constraints = { video: { deviceId: this.videoSource ? { exact: this.videoSource } : undefined } }
@@ -65,7 +65,11 @@ export default {
         .then( this.gotStream )
         .then( ( deviceInfos ) => {
           this.gotDevices( deviceInfos )
-          setTimeout( () => this.quaggarStart(), LOOP_INTERVAL )
+          setTimeout( () => {
+            if( !this.readCode ) {
+              this.quaggarStart()
+            }
+          }, LOOP_INTERVAL )
         } )
         .catch( e => {console.error( 'error : ' + e )} )
     },
@@ -82,10 +86,6 @@ export default {
       return navigator.mediaDevices.enumerateDevices()
     },
     quaggarStart() {
-      if( this.readCode ) {
-        return
-      }
-
       this.canvas = this.$refs['canvas']
       this.context = this.canvas.getContext( '2d' )
       this.canvas.width = this.video.clientWidth
@@ -110,7 +110,11 @@ export default {
               this.$emit( 'codeResult', result )
             } else {
               console.log( 'not detected' )
-              setTimeout( () => this.quaggarStart(), LOOP_INTERVAL )
+              setTimeout( () => {
+                if( !this.readCode ) {
+                  this.quaggarStart()
+                }
+              }, LOOP_INTERVAL )
             }
           } )
         }
@@ -124,11 +128,10 @@ export default {
 
 <style lang="scss" scoped>
 .read-qr-barcode {
+
   .device-select-area {
-    display: flex;
 
     .device-select-title {
-      flex: 0 0 1; /* 증가너비 감소너비 기본너비 */
     }
 
     .device-select {

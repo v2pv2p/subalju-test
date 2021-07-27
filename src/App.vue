@@ -1,6 +1,11 @@
 <template>
   <div id="app">
-    <router-view/>
+    <div class="router">
+      <router-view/>
+    </div>
+    <div class="popup">
+      <popup-anchor/>
+    </div>
   </div>
 </template>
 
@@ -12,11 +17,23 @@ export default {
 
 <style lang="scss">
 #app {
+  width: 100%;
+  height: 100%;
+  max-height: 100%;
+
+  overflow: hidden;
+
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
-  margin-top: 60px;
+
+  .popup {
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
 
 }
 </style>

@@ -3,10 +3,10 @@ import Router from 'vue-router'
 import Home from '@/pages/home'
 
 Vue.use( Router )
-
 export default new Router( {
   routes: [
     { path: '/home', name: 'home', component: Home },
     { path: '/', component: Home },
+    { path: '*', component: Home },
   ]
 } )

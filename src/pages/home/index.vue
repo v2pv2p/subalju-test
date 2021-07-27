@@ -1,12 +1,10 @@
 <template>
   <div class="home-wrapper">
     <div class="barcode-area">
-      <div class="barcode-scan-btn" @click="openModal">바코드 스캔</div>
-      <custom-modal @close="closeModal" v-if="isShowModal">
-        <add-qr-barcode @readResult="readResult"></add-qr-barcode>
-      </custom-modal>
+      <div class="barcode-title">제품 추가</div>
+      <div class="barcode-scan-btn" @click="barcodeScan">바코드 스캔</div>
     </div>
-
+    {{ barcode }}
     <!--    <div v-if="productInfoDataLoaded" style="background-color: pink">-->
     <!--      <div v-for="product in productInfoOfBarcode">-->
     <!--        {{ product }}-->
@@ -26,27 +24,20 @@
 
 <script>
 import req2svr from './req2svr'
-import customModal from '@/components/customModal'
 import addQrBarcode from '@/popup/addQrBarcode'
 
 export default {
   name: 'home',
-  components: {
-    addQrBarcode,
-    customModal
-  },
   computed: {
     req2svr: () => req2svr
   },
   data() {
     return {
-      isShowModal: false,
-
       productInfoOfBarcode: '',
       productSaleInfoOfBarcode: '',
       productInfoDataLoaded: false,
       productSaleInfoDataLoaded: false,
-      barcode: '8802039211424',
+      barcode: '',
       isShowReadBarcode: false
     }
   },
@@ -54,16 +45,10 @@ export default {
     // this.getInitData()
   },
   methods: {
-    readResult(resultCode) {
-      alert(resultCode)
-    },
-    openModal() {
-      this.isShowModal = true
-    },
-    closeModal() {
-      this.isShowModal = false
-    },
     barcodeScan() {
+      this.$popupManager.open( addQrBarcode ).promise.then( res => {
+        this.barcode = res
+      } )
     },
     getInitData() {
       this.getProductInfoOfBarcode()
