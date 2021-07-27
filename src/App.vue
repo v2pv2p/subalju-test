@@ -29,10 +29,8 @@ export default {
   color: #2c3e50;
 
   .popup {
-    overflow: hidden;
-    position: absolute;
-    top: 0;
-    left: 0;
+    width: 100%;
+    height: 100%;
   }
 
 }

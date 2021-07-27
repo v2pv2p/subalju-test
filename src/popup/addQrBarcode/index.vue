@@ -1,11 +1,12 @@
 <template>
-  <div class="add-qr-barcode">
-    <div @click="closePopup">close</div>
-    <div class="barcode-area">
-      <read-qr-barcode @codeResult="setCodeResult"></read-qr-barcode>
+  <div class="popup-wrapper">
+    <div class="add-qr-barcode">
+      <div @click="closePopup">close</div>
+      <div class="barcode-area">
+        <read-qr-barcode @codeResult="setCodeResult"></read-qr-barcode>
+      </div>
     </div>
   </div>
-
 </template>
 
 <script>

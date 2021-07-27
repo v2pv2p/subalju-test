@@ -141,6 +141,8 @@ export default {
 
   .stream-area {
     .video {
+      position: absolute;
+      height: 100%;
     }
 
     .canvas {
