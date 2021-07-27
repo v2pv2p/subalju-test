@@ -4,7 +4,11 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import popupManager from './popupManager'
+import MIcon from '@/components/materialIcon'
 
+import 'material-icons/iconfont/material-icons.css'
+
+Vue.component('m-icon', MIcon)
 Vue.use( popupManager )
 Vue.config.productionTip = false
 

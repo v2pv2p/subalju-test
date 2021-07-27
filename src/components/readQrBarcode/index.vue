@@ -1,12 +1,8 @@
 <template>
   <div class="read-qr-barcode">
     <div class="device-select-area">
-      <div class="device-select">
-        <select v-model="selectedDevice" @change="changeVideoInput">
-          <option v-for="device in devices" :value="device">
-            {{ device.label }}
-          </option>
-        </select>
+      <div class="device-select" @click="changeVideoInput">
+        <m-icon>refresh</m-icon>
       </div>
     </div>
 
@@ -49,6 +45,7 @@ export default {
     this.getVideoInput()
   },
   beforeDestroy() {
+    this.readCode = 'readCode is not available'
     if( this.video ) {
       this.video.pause()
       this.video = null
@@ -56,6 +53,16 @@ export default {
   },
   methods: {
     changeVideoInput() {
+      const selectedDeviceId = _.get( this.selectedDevice, 'deviceId' )
+      const selectedDeviceIndex = _.findIndex( this.devices, { deviceId: selectedDeviceId } )
+      const lastDevice = _.last( this.devices )
+
+      if( _.get( lastDevice, 'deviceId' ) === selectedDeviceId ) {
+        this.selectedDevice = this.devices[0]
+      } else {
+        this.selectedDevice = this.devices[selectedDeviceIndex + 1]
+      }
+
       this.videoSource = this.selectedDevice.deviceId
       this.getVideoInput()
     },
@@ -75,9 +82,9 @@ export default {
         .catch( e => {console.error( 'error : ' + e )} )
     },
     gotDevices( deviceInfos ) {
-      this.devices = _.filter( deviceInfos, deviceInfo => {
+      this.devices = _.chain( deviceInfos ).filter( deviceInfo => {
         return deviceInfo.kind === 'videoinput'
-      } )
+      } ).reverse().value()
     },
     gotStream( stream ) {
       this.video.srcObject = stream
@@ -132,6 +139,8 @@ export default {
   position: relative;
 
   .device-select-area {
+    top: 0;
+    position: absolute;
 
     .device-select-title {
     }
@@ -143,8 +152,7 @@ export default {
 
   .stream-area {
     .video {
-      top: 0;
-      position: absolute;
+
       width: 100%;
     }
 
