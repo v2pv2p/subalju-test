@@ -1,7 +1,7 @@
 <template>
   <div class="read-qr-barcode">
     <div class="device-select-area">
-      <div class="device-select" @click="changeVideoInput">
+      <div class="device-select" @click.prevent="changeVideoInput">
         <m-icon>refresh</m-icon>
       </div>
     </div>
@@ -59,8 +59,10 @@ export default {
 
       if( _.get( lastDevice, 'deviceId' ) === selectedDeviceId ) {
         this.selectedDevice = this.devices[0]
+        alert( 1 )
       } else {
         this.selectedDevice = this.devices[selectedDeviceIndex + 1]
+        alert( 2 )
       }
 
       this.videoSource = this.selectedDevice.deviceId
@@ -139,6 +141,7 @@ export default {
   position: relative;
 
   .device-select-area {
+    z-index: 99999999;
     top: 0;
     position: absolute;
 

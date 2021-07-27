@@ -1,7 +1,7 @@
 <template>
   <div class="popup-wrapper">
     <div class="add-qr-barcode">
-      <div @click="closePopup">close</div>
+      <div class="close-btn" @click.self="closePopup">close</div>
       <div class="barcode-area">
         <read-qr-barcode @codeResult="setCodeResult"></read-qr-barcode>
       </div>
@@ -41,20 +41,8 @@ export default {
 
   background-color: goldenrod;
 
-  & /deep/ .fpm--modal {
-    height: 100%;
-  }
-
-  & > > > .fpm--modal {
-    height: 100%;
-  }
-
-  & /deep/ .fpm--modal-overlay {
-    height: 100%;
-  }
-
-  & > > > .fpm--modal-overlay {
-    height: 100%;
+  .close-btn {
+    padding: 20px;
   }
 }
 
