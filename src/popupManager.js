@@ -103,7 +103,6 @@ export default function install( Vue ) {
   Vue.component( 'popup-anchor', {
     name: 'popup-anchor',
     created() { //popup-anchor 컴포넌트가 생성되었을
-      console.log( this )
       anchorVm = this //popup-anchor의 인스턴스를 저장해 둔다. 이후 open이나 close 시에 $forceUpdate를 위해 사용된다.
     },
     render: function( createElement ) {

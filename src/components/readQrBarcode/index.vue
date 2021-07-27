@@ -2,7 +2,7 @@
   <div class="read-qr-barcode">
     <div class="device-select-area">
       <div class="device-select" @click.prevent="changeVideoInput">
-        <m-icon>refresh</m-icon>
+        <m-icon>카메라 전환</m-icon>
       </div>
     </div>
 
@@ -40,7 +40,6 @@ export default {
   },
   mounted() {
     this.video = this.$refs['video']
-    this.videoSource = this.video.value
 
     this.getVideoInput()
   },
@@ -69,7 +68,12 @@ export default {
       this.getVideoInput()
     },
     getVideoInput() {
-      const constraints = { video: { deviceId: this.videoSource ? { exact: this.videoSource } : undefined } }
+      const lastDevice = _.last( this.devices )
+      const constraints = {
+        video: {
+          deviceId: this.videoSource ? { exact: this.videoSource ? this.videoSource : _.get( lastDevice, 'deviceId' ) } : undefined
+        }
+      }
 
       navigator.mediaDevices.getUserMedia( constraints )
         .then( this.gotStream )
@@ -84,9 +88,13 @@ export default {
         .catch( e => {console.error( 'error : ' + e )} )
     },
     gotDevices( deviceInfos ) {
-      this.devices = _.chain( deviceInfos ).filter( deviceInfo => {
+      this.devices = _.filter( deviceInfos, deviceInfo => {
         return deviceInfo.kind === 'videoinput'
-      } ).reverse().value()
+      } )
+
+      if( !this.selectedDevice ) {
+        this.selectedDevice = this.devices[0]
+      }
     },
     gotStream( stream ) {
       this.video.srcObject = stream
@@ -144,6 +152,8 @@ export default {
     z-index: 99999999;
     top: 0;
     position: absolute;
+
+    padding: 20px;
 
     .device-select-title {
     }
