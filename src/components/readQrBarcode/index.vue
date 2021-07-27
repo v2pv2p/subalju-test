@@ -16,6 +16,7 @@
       <img class="image" ref='canvasImgFile' :src="img" v-show="false">
     </div>
 
+
   </div>
 </template>
 
@@ -128,6 +129,7 @@ export default {
 
 <style lang="scss" scoped>
 .read-qr-barcode {
+  position: relative;
 
   .device-select-area {
 
@@ -141,8 +143,9 @@ export default {
 
   .stream-area {
     .video {
+      top: 0;
       position: absolute;
-      height: 100%;
+      width: 100%;
     }
 
     .canvas {
