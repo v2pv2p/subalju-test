@@ -1,21 +1,21 @@
 <template>
   <div class="read-qr-barcode">
-    <div class="stream-area">
-      <video class="video" ref="video" autoPlay></video>
-      <canvas class="canvas" ref="canvas"></canvas>
-      <img class="image" ref='canvasImgFile' :src="img">
-    </div>
-
     <div class="device-select-area">
       <div class="device-select">
-        <select v-model="selectedDevice" @change="changeVideoInput">
-          <option v-for="device in devices" :value="device">
+        <select v-model="selectedDeviceId" @change="changeVideoInput">
+          <option v-for="device in devices" :value="device.deviceId">
             {{ device.label }}
           </option>
         </select>
       </div>
     </div>
-    꾸유ㅜ우아아
+
+    <div class="stream-area">
+      <video class="video" ref="video" autoPlay></video>
+      <canvas class="canvas" ref="canvas" v-show="false"></canvas>
+      <img class="image" ref='canvasImgFile' :src="img" v-show="false">
+    </div>
+
 
   </div>
 </template>
@@ -37,7 +37,7 @@ export default {
       videoSource: null,
 
       devices: null,
-      selectedDevice: null,
+      selectedDeviceId: null,
 
       readCode: ''
     }
@@ -45,10 +45,11 @@ export default {
   mounted() {
     this.video = this.$refs['video']
     this.videoSource = this.video.value
-
     this.getVideoInput()
+
   },
   beforeDestroy() {
+    this.readCode = 'readCode is not available'
     if( this.video ) {
       this.video.pause()
       this.video = null
@@ -56,7 +57,8 @@ export default {
   },
   methods: {
     changeVideoInput() {
-      this.videoSource = this.selectedDevice.deviceId
+      this.videoSource = this.selectedDeviceId
+      this.getVideoInput()
     },
     getVideoInput() {
       const constraints = { video: { deviceId: this.videoSource ? { exact: this.videoSource } : undefined } }
@@ -65,14 +67,22 @@ export default {
         .then( this.gotStream )
         .then( ( deviceInfos ) => {
           this.gotDevices( deviceInfos )
-          setTimeout( () => this.quaggarStart(), LOOP_INTERVAL )
+          setTimeout( () => {
+            if( !this.readCode ) {
+              this.quaggarStart()
+            }
+          }, LOOP_INTERVAL )
         } )
         .catch( e => {console.error( 'error : ' + e )} )
     },
     gotDevices( deviceInfos ) {
       this.devices = _.filter( deviceInfos, deviceInfo => {
         return deviceInfo.kind === 'videoinput'
-      } )
+      } ).reverse()
+
+      if( !this.selectedDeviceId ) {
+        this.selectedDeviceId = this.devices[0].deviceId
+      }
     },
     gotStream( stream ) {
       this.video.srcObject = stream
@@ -82,10 +92,6 @@ export default {
       return navigator.mediaDevices.enumerateDevices()
     },
     quaggarStart() {
-      if( this.readCode ) {
-        return
-      }
-
       this.canvas = this.$refs['canvas']
       this.context = this.canvas.getContext( '2d' )
       this.canvas.width = this.video.clientWidth
@@ -110,7 +116,11 @@ export default {
               this.$emit( 'codeResult', result )
             } else {
               console.log( 'not detected' )
-              setTimeout( () => this.quaggarStart(), LOOP_INTERVAL )
+              setTimeout( () => {
+                if( !this.readCode ) {
+                  this.quaggarStart()
+                }
+              }, LOOP_INTERVAL )
             }
           } )
         }
@@ -124,11 +134,12 @@ export default {
 
 <style lang="scss" scoped>
 .read-qr-barcode {
+  position: relative;
+
   .device-select-area {
-    display: flex;
+    top: 0;
 
     .device-select-title {
-      flex: 0 0 1; /* 증가너비 감소너비 기본너비 */
     }
 
     .device-select {
@@ -138,9 +149,9 @@ export default {
 
   .stream-area {
     .video {
+      position: absolute;
+      z-index: 999999;
       width: 100%;
-      max-width: 350px;
-      height: auto;
     }
 
     .canvas {
