@@ -2,6 +2,7 @@
   <div class="read-qr-barcode">
     <div class="device-select-area">
       <div class="device-select">
+        111
         <select v-model="selectedDeviceId" @change="changeVideoInput">
           <option v-for="device in devices" :value="device.deviceId">
             {{ device.label }}
@@ -92,14 +93,14 @@ export default {
       return navigator.mediaDevices.enumerateDevices()
     },
     quaggarStart() {
-      this.canvas = this.$refs['canvas']
-      this.context = this.canvas.getContext( '2d' )
-      this.canvas.width = this.video.clientWidth
-      this.canvas.height = this.video.clientHeight
-      this.context.drawImage( this.video, 0, 0, this.canvas.width, this.canvas.height )
-      this.img = this.canvas.toDataURL()
-
       try {
+        this.canvas = this.$refs['canvas']
+        this.context = this.canvas.getContext( '2d' )
+        this.canvas.width = this.video.clientWidth
+        this.canvas.height = this.video.clientHeight
+        this.context.drawImage( this.video, 0, 0, this.canvas.width, this.canvas.height )
+        this.img = this.canvas.toDataURL()
+
         if( this.video.readyState === this.video.HAVE_ENOUGH_DATA ) {
           Quagga.decodeSingle( {
             src: this.img,
