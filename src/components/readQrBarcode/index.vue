@@ -113,10 +113,20 @@ export default {
               readers: ['ean_reader'] // List of active readers
             },
           }, ( result ) => {
+            let aa
+            let bb
             if( _.get( result, 'codeResult' ) ) {
+              if( !aa ) {
+                aa = result
+                console.log( aa )
+              }
               this.readCode = _.get( result, 'codeResult.code' )
               this.$emit( 'codeResult', result )
             } else {
+              if( !bb ) {
+                bb = 'not result'
+                console.log( bb )
+              }
               console.log( 'not detected' )
               setTimeout( () => {
                 if( !this.readCode ) {
