@@ -118,14 +118,14 @@ export default {
             if( _.get( result, 'codeResult' ) ) {
               if( !aa ) {
                 aa = result
-                console.log( aa )
+                alert( aa )
               }
               this.readCode = _.get( result, 'codeResult.code' )
               this.$emit( 'codeResult', result )
             } else {
               if( !bb ) {
-                bb = 'not result'
-                console.log( bb )
+                bb = 'result'
+                alert( bb )
               }
               console.log( 'not detected' )
               setTimeout( () => {
