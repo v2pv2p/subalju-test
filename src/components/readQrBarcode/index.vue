@@ -32,6 +32,7 @@ export default {
   data() {
     return {
       video: null,
+      stream: null,
       canvas: null,
       context: null,
       img: null,
@@ -51,9 +52,17 @@ export default {
   },
   beforeDestroy() {
     this.readCode = 'readCode is not available'
+
     if( this.video ) {
       this.video.pause()
       this.video = null
+    }
+
+    if( this.stream ) {
+      this.stream.getTracks().forEach( track => {
+        track.stop()
+      } )
+      this.stream = null
     }
   },
   methods: {
@@ -87,6 +96,7 @@ export default {
       }
     },
     gotStream( stream ) {
+      this.stream = stream
       this.video.srcObject = stream
       this.video.setAttribute( 'playsinline', true ) // required to tell iOS safari we don't want fullscreen
       this.video.play()
@@ -103,7 +113,7 @@ export default {
         this.img = this.canvas.toDataURL()
 
         if( this.video.readyState === this.video.HAVE_ENOUGH_DATA ) {
-          alert('여기')
+          alert( '여기' )
           Quagga.decodeSingle( {
             src: this.img,
             numOfWorkers: 0,  // Needs to be 0 when used within node
@@ -128,10 +138,10 @@ export default {
             }
           } )
         } else {
-          alert('00')
+          alert( '00' )
         }
       } catch( error ) {
-        alert( 'QR/Barcode reading error'+ error )
+        alert( 'QR/Barcode reading error' + error )
         console.error( 'QR/Barcode reading error', error )
       }
     },
