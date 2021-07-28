@@ -23,7 +23,7 @@
 
 <script>
 import _ from 'lodash'
-import Quagga from 'quagga'
+import Quagga from '@ericblade/quagga2'
 
 const LOOP_INTERVAL = 20
 
