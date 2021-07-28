@@ -130,16 +130,14 @@ export default {
               this.$emit( 'codeResult', result )
             } else {
               console.log( 'not detected' )
-              setTimeout( () => {
-                if( !this.readCode ) {
-                  this.quaggarStart()
-                }
-              }, LOOP_INTERVAL )
             }
           } )
-        } else {
-          alert( '00' )
         }
+        setTimeout( () => {
+          if( !this.readCode ) {
+            this.quaggarStart()
+          }
+        }, LOOP_INTERVAL )
       } catch( error ) {
         alert( 'QR/Barcode reading error' + error )
         console.error( 'QR/Barcode reading error', error )
