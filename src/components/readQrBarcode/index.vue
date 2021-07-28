@@ -138,6 +138,7 @@ export default {
           } )
         }
       } catch( error ) {
+        alert( 'QR/Barcode reading error', error )
         console.error( 'QR/Barcode reading error', error )
       }
     },
