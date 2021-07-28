@@ -2,7 +2,6 @@
   <div class="read-qr-barcode">
     <div class="device-select-area">
       <div class="device-select">
-        111
         <select v-model="selectedDeviceId" @change="changeVideoInput">
           <option v-for="device in devices" :value="device.deviceId">
             {{ device.label }}
@@ -13,8 +12,8 @@
 
     <div class="stream-area">
       <video class="video" ref="video" autoPlay></video>
-      <canvas class="canvas" ref="canvas" v-show="false"></canvas>
-      <img class="image" ref='canvasImgFile' :src="img" v-show="false">
+      <canvas class="canvas" ref="canvas"></canvas>
+      <img class="image" ref='canvasImgFile' :src="img">
     </div>
 
 
@@ -23,7 +22,7 @@
 
 <script>
 import _ from 'lodash'
-import Quagga from '@ericblade/quagga2'
+import Quagga from '@ericblade/quagga2';
 
 const LOOP_INTERVAL = 20
 
@@ -88,7 +87,7 @@ export default {
     gotDevices( deviceInfos ) {
       this.devices = _.filter( deviceInfos, deviceInfo => {
         return deviceInfo.kind === 'videoinput'
-      } ).reverse()
+      } )
 
       if( !this.selectedDeviceId ) {
         this.selectedDeviceId = this.devices[0].deviceId
@@ -104,16 +103,18 @@ export default {
       return navigator.mediaDevices.enumerateDevices()
     },
     quaggarStart() {
-      try {
-        this.canvas = this.$refs['canvas']
-        this.context = this.canvas.getContext( '2d' )
-        this.canvas.width = this.video.clientWidth
-        this.canvas.height = this.video.clientHeight
-        this.context.drawImage( this.video, 0, 0, this.canvas.width, this.canvas.height )
-        this.img = this.canvas.toDataURL()
 
+      this.canvas = this.$refs['canvas']
+      this.context = this.canvas.getContext( '2d' )
+      this.canvas.width = this.video.clientWidth
+      this.canvas.height = this.video.clientHeight
+      this.context.drawImage( this.video, 0, 0, this.canvas.width, this.canvas.height )
+      this.img = this.canvas.toDataURL()
+      setTimeout( () => {
+        if( !this.readCode ) {
+          this.quaggarStart()
+        }
         if( this.video.readyState === this.video.HAVE_ENOUGH_DATA ) {
-          alert( '여기' )
           Quagga.decodeSingle( {
             src: this.img,
             numOfWorkers: 0,  // Needs to be 0 when used within node
@@ -124,7 +125,6 @@ export default {
               readers: ['ean_reader'] // List of active readers
             },
           }, ( result ) => {
-            alert( JSON.stringify(result) )
             if( _.get( result, 'codeResult' ) ) {
               this.readCode = _.get( result, 'codeResult.code' )
               this.$emit( 'codeResult', result )
@@ -133,15 +133,7 @@ export default {
             }
           } )
         }
-        setTimeout( () => {
-          if( !this.readCode ) {
-            this.quaggarStart()
-          }
-        }, LOOP_INTERVAL )
-      } catch( error ) {
-        alert( 'QR/Barcode reading error' + error )
-        console.error( 'QR/Barcode reading error', error )
-      }
+      }, LOOP_INTERVAL )
     },
   }
 }
@@ -166,15 +158,16 @@ export default {
     .video {
       position: absolute;
       z-index: 999999;
-      width: 100%;
     }
 
     .canvas {
-      visibility: hidden
+      width: 640px;
+      height: 480px;
     }
 
     .image {
-      visibility: hidden
+      width: 640px;
+      height: 480px;
     }
   }
 
