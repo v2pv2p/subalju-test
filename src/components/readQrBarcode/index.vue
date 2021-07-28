@@ -113,6 +113,7 @@ export default {
               readers: ['ean_reader'] // List of active readers
             },
           }, ( result ) => {
+            alert( result )
             let aa
             let bb
             if( _.get( result, 'codeResult' ) ) {
