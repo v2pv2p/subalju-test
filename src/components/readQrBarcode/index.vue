@@ -103,6 +103,7 @@ export default {
         this.img = this.canvas.toDataURL()
 
         if( this.video.readyState === this.video.HAVE_ENOUGH_DATA ) {
+          alert('여기')
           Quagga.decodeSingle( {
             src: this.img,
             numOfWorkers: 0,  // Needs to be 0 when used within node
@@ -114,20 +115,10 @@ export default {
             },
           }, ( result ) => {
             alert( result )
-            let aa
-            let bb
             if( _.get( result, 'codeResult' ) ) {
-              if( !aa ) {
-                aa = result
-                alert( aa )
-              }
               this.readCode = _.get( result, 'codeResult.code' )
               this.$emit( 'codeResult', result )
             } else {
-              if( !bb ) {
-                bb = 'result'
-                alert( bb )
-              }
               console.log( 'not detected' )
               setTimeout( () => {
                 if( !this.readCode ) {
@@ -136,6 +127,8 @@ export default {
               }, LOOP_INTERVAL )
             }
           } )
+        } else {
+          alert('00')
         }
       } catch( error ) {
         alert( 'QR/Barcode reading error'+ error )
