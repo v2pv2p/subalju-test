@@ -12,6 +12,7 @@
     "build": "node build/build.js"
   },
   "dependencies": {
+    "@ericblade/quagga2": "^1.4.1",
     "@zxing/library": "^0.18.4",
     "lodash": "^4.17.21",
     "material-icons": "^1.0.0",

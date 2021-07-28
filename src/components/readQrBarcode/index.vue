@@ -1,24 +1,26 @@
 <template>
   <div class="read-qr-barcode">
     <div class="device-select-area">
-      <div class="device-select" @click.prevent="changeVideoInput">
-        <m-icon>카메라 전환</m-icon>
+      <div class="device-select">
+        <select v-model="selectedDevice" @change="changeVideoInput">
+          <option v-for="device in devices" :value="device">
+            {{ device.label }}
+          </option>
+        </select>
       </div>
     </div>
 
     <div class="stream-area">
       <video class="video" ref="video" autoPlay></video>
-      <canvas class="canvas" ref="canvas" v-show="false"></canvas>
-      <img class="image" ref='canvasImgFile' :src="img" v-show="false">
+      <canvas class="canvas" ref="canvas"></canvas>
+      <img class="image" ref='canvasImgFile' :src="img">
     </div>
-
-
   </div>
 </template>
 
 <script>
 import _ from 'lodash'
-import Quagga from 'quagga'
+import Quagga from '@ericblade/quagga2'
 
 const LOOP_INTERVAL = 20
 
@@ -40,11 +42,11 @@ export default {
   },
   mounted() {
     this.video = this.$refs['video']
+    this.videoSource = this.video.value
 
     this.getVideoInput()
   },
   beforeDestroy() {
-    this.readCode = 'readCode is not available'
     if( this.video ) {
       this.video.pause()
       this.video = null
@@ -52,36 +54,19 @@ export default {
   },
   methods: {
     changeVideoInput() {
-      const selectedDeviceId = _.get( this.selectedDevice, 'deviceId' )
-      const selectedDeviceIndex = _.findIndex( this.devices, { deviceId: selectedDeviceId } )
-      const lastDevice = _.last( this.devices )
-
-      if( _.get( lastDevice, 'deviceId' ) === selectedDeviceId ) {
-        this.selectedDevice = this.devices[0]
-        alert( 1 )
-      } else {
-        this.selectedDevice = this.devices[selectedDeviceIndex + 1]
-        alert( 2 )
-      }
-
       this.videoSource = this.selectedDevice.deviceId
       this.getVideoInput()
     },
     getVideoInput() {
-      const lastDevice = _.last( this.devices )
-      const constraints = {
-        video: {
-          deviceId: this.videoSource ? { exact: this.videoSource ? this.videoSource : _.get( lastDevice, 'deviceId' ) } : undefined
-        }
-      }
-
+      const constraints = { video: { deviceId: this.videoSource ? { exact: this.videoSource } : undefined } }
+      let thisVue = this
       navigator.mediaDevices.getUserMedia( constraints )
         .then( this.gotStream )
         .then( ( deviceInfos ) => {
           this.gotDevices( deviceInfos )
           setTimeout( () => {
-            if( !this.readCode ) {
-              this.quaggarStart()
+            if( !thisVue.readCode ) {
+              thisVue.quaggarStart()
             }
           }, LOOP_INTERVAL )
         } )
@@ -91,10 +76,6 @@ export default {
       this.devices = _.filter( deviceInfos, deviceInfo => {
         return deviceInfo.kind === 'videoinput'
       } )
-
-      if( !this.selectedDevice ) {
-        this.selectedDevice = this.devices[0]
-      }
     },
     gotStream( stream ) {
       this.video.srcObject = stream
@@ -113,6 +94,7 @@ export default {
 
       try {
         if( this.video.readyState === this.video.HAVE_ENOUGH_DATA ) {
+          let thisVue = this
           Quagga.decodeSingle( {
             src: this.img,
             numOfWorkers: 0,  // Needs to be 0 when used within node
@@ -122,15 +104,14 @@ export default {
             decoder: {
               readers: ['ean_reader'] // List of active readers
             },
-          }, ( result ) => {
+          }, function( result ) {
             if( _.get( result, 'codeResult' ) ) {
-              this.readCode = _.get( result, 'codeResult.code' )
-              this.$emit( 'codeResult', result )
+              console.log( 'result', result.codeResult.code )
             } else {
               console.log( 'not detected' )
               setTimeout( () => {
-                if( !this.readCode ) {
-                  this.quaggarStart()
+                if( !thisVue.readCode ) {
+                  thisVue.quaggarStart()
                 }
               }, LOOP_INTERVAL )
             }
@@ -149,11 +130,6 @@ export default {
   position: relative;
 
   .device-select-area {
-    z-index: 99999999;
-    top: 0;
-    position: absolute;
-
-    padding: 20px;
 
     .device-select-title {
     }
@@ -165,7 +141,8 @@ export default {
 
   .stream-area {
     .video {
-
+      top: 0;
+      position: absolute;
       width: 100%;
     }
 
