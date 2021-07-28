@@ -62,11 +62,6 @@ export default {
       this.getVideoInput()
     },
     getVideoInput() {
-      if( !this.selectedDeviceId ) {
-        this.selectedDeviceId = _.get( this.devices, '0.deviceId' )
-        this.videoSource = this.selectedDeviceId
-      }
-
       const constraints = { video: { deviceId: this.videoSource ? { exact: this.videoSource } : undefined } }
 
       navigator.mediaDevices.getUserMedia( constraints )
@@ -85,6 +80,11 @@ export default {
       this.devices = _.filter( deviceInfos, deviceInfo => {
         return deviceInfo.kind === 'videoinput'
       } ).reverse()
+
+      if( !this.selectedDeviceId ) {
+        this.selectedDeviceId = this.devices[0].deviceId
+        this.changeVideoInput()
+      }
     },
     gotStream( stream ) {
       this.video.srcObject = stream
