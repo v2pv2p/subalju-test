@@ -2,7 +2,7 @@ import axios from 'axios'
 
 export default {
   getProductInfoOfBarcode( barcodeNum ) {
-    return axios.get( 'http://openapi.foodsafetykorea.go.kr/api/sample/C005/json/1/5' + (barcodeNum ? '/BAR_CD=' + barcodeNum : ''), {
+    return axios.get( 'https://openapi.foodsafetykorea.go.kr/api/sample/C005/json/1/5' + (barcodeNum ? '/BAR_CD=' + barcodeNum : ''), {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
         'Accept': 'application/json'
@@ -12,7 +12,7 @@ export default {
     } )
   },
   getProductSaleInfoOfBarcode( barcodeNum ) {
-    return axios.get( 'http://openapi.foodsafetykorea.go.kr/api/sample/I2570/json/1/5' + (barcodeNum ? '/BRCD_NO=' + barcodeNum : ''), {
+    return axios.get( 'https://openapi.foodsafetykorea.go.kr/api/sample/I2570/json/1/5' + (barcodeNum ? '/BRCD_NO=' + barcodeNum : ''), {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
         'Accept': 'application/json'
@@ -22,7 +22,7 @@ export default {
     } )
   },
   getProductNutritionInfo( productName ) {
-    return axios.get( 'http://openapi.foodsafetykorea.go.kr/api/sample/I2790/json/1/5/DESC_KOR=' + productName, {
+    return axios.get( 'https://openapi.foodsafetykorea.go.kr/api/sample/I2790/json/1/5/DESC_KOR=' + productName, {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
         'Accept': 'application/json'
