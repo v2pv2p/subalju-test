@@ -42,8 +42,8 @@ export default {
       nutritionInfoDataLoaded: false,
       productInfoDataLoaded: false,
       productSaleInfoDataLoaded: false,
+
       barcode: '',
-      isShowReadBarcode: false
     }
   },
   created() {
@@ -77,7 +77,7 @@ export default {
       } )
     },
     async getProductNutritionInfo() {
-      console.log( this.productInfoOfBarcode )
+      this.nutritionInfoDataLoaded = false
       await this.req2svr.getProductNutritionInfo( this.productInfoOfBarcode[0].PRDLST_NM ).then( ( res ) => {
         this.nutritionInfoOfProductName = res
         this.nutritionInfoDataLoaded = true

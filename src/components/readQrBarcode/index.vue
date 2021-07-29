@@ -83,9 +83,9 @@ export default {
         .catch( e => {console.error( 'error : ' + e )} )
     },
     gotDevices( deviceInfos ) {
-      this.devices = _.filter( deviceInfos, deviceInfo => {
+      this.devices = _.chain( deviceInfos ).filter( deviceInfo => {
         return deviceInfo.kind === 'videoinput'
-      } )
+      } ).reverse().value()
 
       if( !this.selectedDeviceId ) {
         this.selectedDeviceId = this.devices[0].deviceId
@@ -95,9 +95,9 @@ export default {
     gotStream( stream ) {
       this.stream = stream
       this.video.srcObject = stream
-      this.video.setAttribute( 'playsinline', true ) // required to tell iOS safari we don't want fullscreen
-      this.video.play()
-      // Refresh button list in case labels have become available
+      this.video.setAttribute( 'playsinline', true ) // 플레이어 파일이 아닌 스트림 화면으로 보여짐
+      this.video.play() // 실행
+
       return navigator.mediaDevices.enumerateDevices()
     },
     quaggarStart() {
@@ -107,10 +107,12 @@ export default {
       this.canvas.height = this.video.clientHeight
       this.context.drawImage( this.video, 0, 0, this.canvas.width, this.canvas.height )
       this.img = this.canvas.toDataURL()
+
       setTimeout( () => {
         if( !this.readCode ) {
           this.quaggarStart()
         }
+
         if( this.video.readyState === this.video.HAVE_ENOUGH_DATA ) {
           Quagga.decodeSingle( {
             src: this.img,
