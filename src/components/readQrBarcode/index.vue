@@ -161,9 +161,11 @@ export default {
     }
 
     .canvas {
+      display: none;
     }
 
     .image {
+      display: none;
     }
   }
 
