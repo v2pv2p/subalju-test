@@ -15,8 +15,6 @@
       <canvas class="canvas" ref="canvas"></canvas>
       <img class="image" ref='canvasImgFile' :src="img">
     </div>
-
-
   </div>
 </template>
 
@@ -103,7 +101,6 @@ export default {
       return navigator.mediaDevices.enumerateDevices()
     },
     quaggarStart() {
-
       this.canvas = this.$refs['canvas']
       this.context = this.canvas.getContext( '2d' )
       this.canvas.width = this.video.clientWidth
@@ -158,16 +155,13 @@ export default {
     .video {
       position: absolute;
       z-index: 999999;
+      width: 100%;
     }
 
     .canvas {
-      width: 640px;
-      height: 480px;
     }
 
     .image {
-      width: 640px;
-      height: 480px;
     }
   }
 

@@ -5,19 +5,22 @@
       <div class="barcode-scan-btn" @click="barcodeScan">바코드 스캔</div>
     </div>
     {{ barcode }}
-    <!--    <div v-if="productInfoDataLoaded" style="background-color: pink">-->
-    <!--      <div v-for="product in productInfoOfBarcode">-->
-    <!--        {{ product }}-->
-    <!--      </div>-->
-    <!--    </div>-->
-    <!--    <div v-else style="background-color: pink">로딩중</div>-->
+    <div v-if="productInfoDataLoaded" style="background-color: pink">
+      <div v-for="product in productInfoOfBarcode">
+        {{ product }}
+      </div>
+    </div>
 
-    <!--    <div v-if="productSaleInfoDataLoaded" style="background-color: green">-->
-    <!--      <div v-for="product in productSaleInfoOfBarcode">-->
-    <!--        {{ product }}-->
-    <!--      </div>-->
-    <!--    </div>-->
-    <!--    <div v-else style="background-color: green">로딩중</div>-->
+    <div v-if="productSaleInfoDataLoaded" style="background-color: green">
+      <div v-for="product in productSaleInfoOfBarcode">
+        {{ product }}
+      </div>
+    </div>
+    <div v-if="nutritionInfoDataLoaded" style="background-color: yellow">
+      <div v-for="nutrition in nutritionInfoOfProductName">
+        {{ nutrition }}
+      </div>
+    </div>
   </div>
 
 </template>
@@ -35,6 +38,8 @@ export default {
     return {
       productInfoOfBarcode: '',
       productSaleInfoOfBarcode: '',
+      nutritionInfoOfProductName: '',
+      nutritionInfoDataLoaded: false,
       productInfoDataLoaded: false,
       productSaleInfoDataLoaded: false,
       barcode: '',
@@ -48,40 +53,36 @@ export default {
     barcodeScan() {
       this.$popupManager.open( addQrBarcode ).promise.then( res => {
         this.barcode = res
+        this.getProductData()
       } )
     },
-    getInitData() {
-      this.getProductInfoOfBarcode()
-      this.getProductSaleInfoOfBarcode()
-      // this.getProductNutritionInfo()
+    async getProductData() {
+      await this.getProductInfoOfBarcode()
+      await this.getProductSaleInfoOfBarcode()
+      await this.getProductNutritionInfo()
     },
-    getProductInfoOfBarcode() {
+    async getProductInfoOfBarcode() {
       this.productInfoDataLoaded = false
-      this.req2svr.getProductInfoOfBarcode( '8802039211424' ).then( ( res ) => {
+      await this.req2svr.getProductInfoOfBarcode( this.barcode ).then( ( res ) => {
         this.productInfoOfBarcode = _.filter( res, ( res ) => {return res.BAR_CD === this.barcode} )
         this.productInfoDataLoaded = true
 
       } )
     },
-    getProductSaleInfoOfBarcode() {
+    async getProductSaleInfoOfBarcode() {
       this.productSaleInfoDataLoaded = false
-      this.req2svr.getProductSaleInfoOfBarcode( '8802039211424' ).then( ( res ) => {
+      await this.req2svr.getProductSaleInfoOfBarcode( this.barcode ).then( ( res ) => {
         this.productSaleInfoOfBarcode = res
         this.productSaleInfoDataLoaded = true
       } )
     },
-    getProductNutritionInfo() {
-      this.req2svr.getProductNutritionInfo( '19930443028350' ).then( ( res ) => {
-        this.productSaleInfoOfBarcode = res
-        this.productSaleInfoDataLoaded = true
+    async getProductNutritionInfo() {
+      console.log( this.productInfoOfBarcode )
+      await this.req2svr.getProductNutritionInfo( this.productInfoOfBarcode[0].PRDLST_NM ).then( ( res ) => {
+        this.nutritionInfoOfProductName = res
+        this.nutritionInfoDataLoaded = true
       } )
     },
-    readFinish( res ) {
-      if( _.get( res.readCode ) ) {
-        this.barcode = res.readCode
-        this.getInitData()
-      }
-    }
   }
 }
 </script>

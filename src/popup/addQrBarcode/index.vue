@@ -1,7 +1,9 @@
 <template>
   <div class="popup-wrapper">
     <div class="add-qr-barcode">
-      <div class="close-btn" @click.self="closePopup">close</div>
+      <div class="close-btn" @click.self="closePopup">
+        <m-icon>close</m-icon>
+      </div>
       <div class="barcode-area">
         <read-qr-barcode @codeResult="setCodeResult"></read-qr-barcode>
       </div>
@@ -37,12 +39,16 @@ export default {
 .add-qr-barcode {
   height: 100%;
   width: 100%;
+
   overflow: hidden;
 
-  background-color: goldenrod;
+  background-color: #000000;
 
   .close-btn {
+    display: inline-block;
     padding: 20px;
+    background-color: gold;
+    border-radius: 10px;
   }
 }
 
