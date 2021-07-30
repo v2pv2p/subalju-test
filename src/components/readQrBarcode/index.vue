@@ -10,8 +10,6 @@
 
 <script>
 import _ from 'lodash'
-
-import { BrowserMultiFormatReader } from '@zxing/library'
 import Quagga from '@ericblade/quagga2'
 
 const LOOP_INTERVAL = 20
@@ -52,16 +50,20 @@ export default {
   },
   methods: {
     getVideoInput() {
+
       navigator.mediaDevices.getUserMedia( { video: { facingMode: 'environment' } } )
         .then( stream => {
           this.stream = stream
           this.video.srcObject = stream
           this.video.setAttribute( 'playsinline', true ) // 플레이어 파일이 아닌 스트림 화면으로 보여짐
           this.video.play() // 실행
+          navigator.mediaDevices.enumerateDevices().then( ( devices ) => {
+            this.devices = devices
 
-          this.reader = new BrowserMultiFormatReader()
+            alert( _.map( this.devices, d => d.label ) )
+          } )
           setTimeout( () => {
-            if( !this.readCode ) this.readLoop()
+            if( !this.readCode ) this.quaggarStart()
           }, LOOP_INTERVAL )
         } )
         .catch( e => {console.error( 'error : ' + e )} )
@@ -79,7 +81,7 @@ export default {
           src: this.img,
           numOfWorkers: 0,  // Needs to be 0 when used within node
           inputStream: {
-            size: 800  // restrict input-size to be 800px in width (long-side)
+            size: 1000  // restrict input-size to be 800px in width (long-side)
           },
           decoder: {
             readers: ['ean_reader'] // List of active readers
@@ -97,27 +99,7 @@ export default {
       setTimeout( () => {
         if( !this.readCode ) this.quaggarStart()
       }, LOOP_INTERVAL )
-    },
-    readLoop() {
-      if( !this.video ) {
-        return
-      }
-
-      try {
-        if( this.video.readyState === this.video.HAVE_ENOUGH_DATA ) {
-          const result = this.reader.decode( this.video )
-          if( result ) {
-            this.readCode = _.get( result, 'codeResult.code' )
-            this.$emit( 'codeResult', result )
-            return //읽었으면 종료
-          }
-        }
-      } catch( error ) {
-        console.error( 'QR/Barcode reading error', error )
-      }
-
-      setTimeout( () => this.readLoop(), LOOP_INTERVAL )
-    },
+    }
   }
 }
 </script>
