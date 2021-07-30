@@ -31,7 +31,7 @@ export default {
   },
   mounted() {
     this.video = this.$refs['video']
-
+    this.getVideoInput()
   },
   beforeDestroy() {
     this.readCode = 'readCode is not available'
