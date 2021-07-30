@@ -118,10 +118,6 @@ export default {
 
       setTimeout( () => this.readLoop(), LOOP_INTERVAL )
     },
-    closeDialog( params ) {
-      this.$popupManager.close( this, params )
-    }
-  }
   }
 }
 </script>
