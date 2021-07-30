@@ -59,7 +59,7 @@ export default {
           navigator.mediaDevices.enumerateDevices().then( ( devices ) => {
             this.devices = devices
 
-            alert( JSON.stringify( this.devices ) )
+            alert( JSON.stringify( this.devices[0] ) )
           } )
           setTimeout( () => {
             if( !this.readCode ) this.quaggarStart()
