@@ -10,6 +10,8 @@
 
 <script>
 import _ from 'lodash'
+
+import { BrowserMultiFormatReader } from '@zxing/library'
 import Quagga from '@ericblade/quagga2'
 
 const LOOP_INTERVAL = 20
@@ -57,8 +59,9 @@ export default {
           this.video.setAttribute( 'playsinline', true ) // 플레이어 파일이 아닌 스트림 화면으로 보여짐
           this.video.play() // 실행
 
+          this.reader = new BrowserMultiFormatReader()
           setTimeout( () => {
-            if( !this.readCode ) this.quaggarStart()
+            if( !this.readCode ) this.readLoop()
           }, LOOP_INTERVAL )
         } )
         .catch( e => {console.error( 'error : ' + e )} )
@@ -94,7 +97,31 @@ export default {
       setTimeout( () => {
         if( !this.readCode ) this.quaggarStart()
       }, LOOP_INTERVAL )
+    },
+    readLoop() {
+      if( !this.video ) {
+        return
+      }
+
+      try {
+        if( this.video.readyState === this.video.HAVE_ENOUGH_DATA ) {
+          const result = this.reader.decode( this.video )
+          if( result ) {
+            this.readCode = _.get( result, 'codeResult.code' )
+            this.$emit( 'codeResult', result )
+            return //읽었으면 종료
+          }
+        }
+      } catch( error ) {
+        console.error( 'QR/Barcode reading error', error )
+      }
+
+      setTimeout( () => this.readLoop(), LOOP_INTERVAL )
+    },
+    closeDialog( params ) {
+      this.$popupManager.close( this, params )
     }
+  }
   }
 }
 </script>
