@@ -2,7 +2,7 @@
   <div class="read-qr-barcode">
     <div class="device-select-area">
       <div class="device-select">
-        <select v-model="selectedDeviceId" @change="changeVideoInput">
+        <select v-model="selectedDeviceId" @change="getVideoInput">
           <option v-for="device in devices" :value="device.deviceId">
             {{ device.label }}
           </option>
@@ -33,7 +33,6 @@ export default {
       canvas: null,
       context: null,
       img: null,
-      videoSource: null,
 
       devices: null,
       selectedDeviceId: null,
@@ -43,7 +42,6 @@ export default {
   },
   mounted() {
     this.video = this.$refs['video']
-    this.videoSource = this.video.value
     this.getVideoInput()
 
   },
@@ -63,12 +61,14 @@ export default {
     }
   },
   methods: {
-    changeVideoInput() {
-      this.videoSource = this.selectedDeviceId
-      this.getVideoInput()
-    },
     getVideoInput() {
-      const constraints = { video: { deviceId: this.videoSource ? { exact: this.videoSource } : undefined } }
+      let constraints
+      if( this.selectedDeviceId ) {
+        constraints = { video: { deviceId: { exact: this.selectedDeviceId } } }
+      } else {
+        this.selectedDeviceId = this.video.value
+        constraints = { video: { exact: 'environment' } }
+      }
 
       navigator.mediaDevices.getUserMedia( constraints )
         .then( this.gotStream )
@@ -83,13 +83,10 @@ export default {
         .catch( e => {console.error( 'error : ' + e )} )
     },
     gotDevices( deviceInfos ) {
-      this.devices = _.chain( deviceInfos ).filter( deviceInfo => {
-        return deviceInfo.kind === 'videoinput'
-      } ).reverse().value()
+      this.devices = _.filter( deviceInfos, deviceInfo => deviceInfo.kind === 'videoinput' )
 
       if( !this.selectedDeviceId ) {
-        this.selectedDeviceId = this.devices[0].deviceId
-        this.changeVideoInput()
+        this.selectedDeviceId = _.get( this.devices, '0.deviceId' )
       }
     },
     gotStream( stream ) {
@@ -133,7 +130,7 @@ export default {
           } )
         }
       }, LOOP_INTERVAL )
-    },
+    }
   }
 }
 </script>

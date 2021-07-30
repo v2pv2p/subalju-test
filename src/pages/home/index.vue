@@ -5,18 +5,13 @@
       <div class="barcode-scan-btn" @click="barcodeScan">바코드 스캔</div>
     </div>
     {{ barcode }}
-    <div v-if="productInfoDataLoaded" style="background-color: pink">
+    <div class="product-info-area" v-if="productInfoDataLoaded">
       <div v-for="product in productInfoOfBarcode">
         {{ product }}
       </div>
     </div>
 
-    <div v-if="productSaleInfoDataLoaded" style="background-color: green">
-      <div v-for="product in productSaleInfoOfBarcode">
-        {{ product }}
-      </div>
-    </div>
-    <div v-if="nutritionInfoDataLoaded" style="background-color: yellow">
+    <div class="product-nutrition-info-area" v-if="nutritionInfoDataLoaded">
       <div v-for="nutrition in nutritionInfoOfProductName">
         {{ nutrition }}
       </div>
@@ -37,17 +32,12 @@ export default {
   data() {
     return {
       productInfoOfBarcode: '',
-      productSaleInfoOfBarcode: '',
+      productInfoDataLoaded: false,
       nutritionInfoOfProductName: '',
       nutritionInfoDataLoaded: false,
-      productInfoDataLoaded: false,
-      productSaleInfoDataLoaded: false,
 
       barcode: '',
     }
-  },
-  created() {
-    // this.getInitData()
   },
   methods: {
     barcodeScan() {
@@ -58,36 +48,30 @@ export default {
     },
     async getProductData() {
       await this.getProductInfoOfBarcode()
-      await this.getProductSaleInfoOfBarcode()
       await this.getProductNutritionInfo()
     },
     async getProductInfoOfBarcode() {
       this.productInfoDataLoaded = false
       await this.req2svr.getProductInfoOfBarcode( this.barcode ).then( ( res ) => {
-        this.productInfoOfBarcode = _.filter( res, ( res ) => {return res.BAR_CD === this.barcode} )
+        this.productInfoOfBarcode = _.filter( res, ( res ) => {return res.BAR_CD === this.barcode} )// 이건 다시 확인
         this.productInfoDataLoaded = true
 
       } )
     },
-    async getProductSaleInfoOfBarcode() {
-      this.productSaleInfoDataLoaded = false
-      await this.req2svr.getProductSaleInfoOfBarcode( this.barcode ).then( ( res ) => {
-        this.productSaleInfoOfBarcode = res
-        this.productSaleInfoDataLoaded = true
-      } )
-    },
     async getProductNutritionInfo() {
       this.nutritionInfoDataLoaded = false
-      await this.req2svr.getProductNutritionInfo( this.productInfoOfBarcode[0].PRDLST_NM ).then( ( res ) => {
-        this.nutritionInfoOfProductName = res
-        this.nutritionInfoDataLoaded = true
-      } )
+      let productName = _.get( this.productInfoOfBarcode, '0.PRDLST_NM' )
+      if( productName ) {
+        await this.req2svr.getProductNutritionInfo( productName ).then( ( res ) => {
+          this.nutritionInfoOfProductName = res
+          this.nutritionInfoDataLoaded = true
+        } )
+      }
     },
   }
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 .home-wrapper {
   height: 100%;
@@ -116,5 +100,12 @@ export default {
     }
   }
 
+  .product-info-area {
+    background-color: green;
+  }
+
+  .product-nutrition-info-area {
+    background-color: pink;
+  }
 }
 </style>
