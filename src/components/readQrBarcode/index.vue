@@ -60,7 +60,7 @@ export default {
           navigator.mediaDevices.enumerateDevices().then( ( devices ) => {
             this.devices = devices
 
-            alert( _.map( devices, d => d.label ) )
+            alert( _.map( devices, d => d ) )
           } )
           setTimeout( () => {
             if( !this.readCode ) this.quaggarStart()
