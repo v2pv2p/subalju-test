@@ -50,6 +50,7 @@ export default {
   },
   methods: {
     getVideoInput() {
+
       navigator.mediaDevices.getUserMedia( { video: { facingMode: 'environment' } } )
         .then( stream => {
           this.stream = stream
@@ -59,7 +60,7 @@ export default {
           navigator.mediaDevices.enumerateDevices().then( ( devices ) => {
             this.devices = devices
 
-            alert( JSON.stringify( this.devices[0] ) )
+            alert( _.map( devices, d => d.label ) )
           } )
           setTimeout( () => {
             if( !this.readCode ) this.quaggarStart()

@@ -55,7 +55,6 @@ export default {
       await this.req2svr.getProductInfoOfBarcode( this.barcode ).then( ( res ) => {
         this.productInfoOfBarcode = _.filter( res, ( res ) => {return res.BAR_CD === this.barcode} )// 이건 다시 확인
         this.productInfoDataLoaded = true
-
       } )
     },
     async getProductNutritionInfo() {
