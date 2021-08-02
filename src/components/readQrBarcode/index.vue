@@ -50,26 +50,29 @@ export default {
   },
   methods: {
     getVideoInput() {
-      this.gotDevices()
-
+      let constraints
       if( this.selectedDeviceId ) {
-        const constraints = { video: { deviceId: this.selectedDeviceId ? { exact: this.selectedDeviceId } : undefined } }
-
-        navigator.mediaDevices.getUserMedia( constraints )
-          .then( stream => {
-            this.stream = stream
-            this.video.srcObject = stream
-            this.video.setAttribute( 'playsinline', true ) // 플레이어 파일이 아닌 스트림 화면으로 보여짐
-
-            this.video.play() // 실행
-            setTimeout( () => {
-              if( !this.readCode ) this.quaggarStart()
-            }, LOOP_INTERVAL )
-          } )
-          .catch( e => {console.error( 'error : ' + e )} )
+        constraints = { video: { deviceId: this.selectedDeviceId ? { exact: this.selectedDeviceId } : undefined } }
       } else {
-        alert( '비디오를 찾지 못하였습니다.' )
+        constraints = { video: { facingMode: 'environment' } }
       }
+
+      navigator.mediaDevices.getUserMedia( constraints )
+        .then( stream => {
+          this.stream = stream
+          this.video.srcObject = stream
+          this.video.setAttribute( 'playsinline', true ) // 플레이어 파일이 아닌 스트림 화면으로 보여짐
+          this.video.play() // 실행
+
+          if( !this.selectedDeviceId ) {
+            this.gotDevices()
+          }
+      
+          setTimeout( () => {
+            if( !this.readCode ) this.quaggarStart()
+          }, LOOP_INTERVAL )
+        } )
+        .catch( e => {console.error( 'error : ' + e )} )
     },
     gotDevices() {
       navigator.mediaDevices.enumerateDevices().then( ( deviceInfos ) => {
