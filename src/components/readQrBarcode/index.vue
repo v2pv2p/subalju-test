@@ -77,8 +77,8 @@ export default {
         let filteredDevices = _.filter( deviceInfos, deviceInfo => {
           return deviceInfo.kind === 'videoinput'
         } )
-
-        this.selectedDeviceId = _.last( filteredDevices ).deviceId
+        alert( filteredDevices )
+        this.selectedDeviceId = filteredDevices[2].deviceId
       } )
     },
     quaggarStart() {
