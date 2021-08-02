@@ -81,6 +81,7 @@ export default {
       }
     },
     gotDevices( deviceInfos ) {
+      alert( 3 )
       this.devices = _.filter( deviceInfos, deviceInfo => {
         return deviceInfo.kind === 'videoinput'
       } )
