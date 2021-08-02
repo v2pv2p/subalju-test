@@ -111,7 +111,6 @@ export default {
               readers: ['ean_reader'] // List of active readers
             },
           }, ( result ) => {
-            alert( JSON.stringify( result ) )
             if( _.get( result, 'codeResult' ) ) {
               this.readCode = _.get( result, 'codeResult.code' )
               this.$emit( 'codeResult', result )
