@@ -74,6 +74,7 @@ export default {
           .then( this.gotStream )
           .then( ( deviceInfos ) => {
             this.gotDevices( deviceInfos )
+            this.getVideoInput()
           } )
           .catch( e => {console.error( 'error : ' + e )} )
       }
