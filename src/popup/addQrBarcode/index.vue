@@ -52,6 +52,11 @@ export default {
 
     position: absolute;
   }
+
+  .barcode-area {
+    width: 100%;
+    height: 100%;
+  }
 }
 
 
