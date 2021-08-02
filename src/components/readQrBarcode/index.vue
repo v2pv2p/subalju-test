@@ -1,9 +1,9 @@
 <template>
-  <div class="read-qr-barcode">
-    <div class="stream-area">
-      <video class="video" ref="video" autoPlay></video>
-      <canvas class="canvas" ref="canvas"></canvas>
-      <img class="image" ref='canvasImgFile' :src="img">
+  <div className="read-qr-barcode">
+    <div className="stream-area">
+      <video className="video" ref="video" autoPlay></video>
+      <canvas className="canvas" ref="canvas"></canvas>
+      <img className="image" ref='canvasImgFile' :src="img">
     </div>
   </div>
 </template>
@@ -24,7 +24,7 @@ export default {
       context: null,
       img: null,
 
-      devices: null,
+      selectedDevice: null,
 
       readCode: ''
     }
@@ -32,6 +32,13 @@ export default {
   mounted() {
     this.video = this.$refs['video']
     this.getVideoInput()
+
+    if( !this.selectedDevice ) {
+      navigator.mediaDevices.enumerateDevices().then( ( devices ) => {
+        this.selectedDevice = _.last( devices )
+        this.getVideoInput( this.selectedDevice )
+      } )
+    }
   },
   beforeDestroy() {
     this.readCode = 'readCode is not available'
@@ -49,23 +56,21 @@ export default {
     }
   },
   methods: {
-    getVideoInput( deviceId ) {
+    getVideoInput( device ) {
+      let deviceId = _.get( device, 'deviceId' )
       let constraints
       if( deviceId ) {
         constraints = { video: { deviceId: deviceId ? { exact: deviceId } : undefined } }
       } else {
         constraints = { video: { facingMode: 'environment' } }
       }
-      navigator.mediaDevices.getUserMedia( { video: { facingMode: 'environment' } } )
+      navigator.mediaDevices.getUserMedia( constraints )
         .then( stream => {
           this.stream = stream
           this.video.srcObject = stream
           this.video.setAttribute( 'playsinline', true ) // 플레이어 파일이 아닌 스트림 화면으로 보여짐
           this.video.play() // 실행
-          navigator.mediaDevices.enumerateDevices().then( ( devices ) => {
-            this.devices = devices
-            alert( _.map( devices, d => d.label ) )
-          } )
+
           setTimeout( () => {
             if( !this.readCode ) this.quaggarStart()
           }, LOOP_INTERVAL )
@@ -85,12 +90,6 @@ export default {
           src: this.img,
           numOfWorkers: 0,  // Needs to be 0 when used within node
           inputStream: {
-            constraints: {
-              width: { min: 640 },
-              height: { min: 480 },
-              aspectRatio: { min: 1, max: 100 },
-              facingMode: 'environment' // or user
-            },
             size: 800  // restrict input-size to be 800px in width (long-side)
           },
           decoder: {
