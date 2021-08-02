@@ -51,7 +51,7 @@ export default {
   },
   methods: {
     getVideoInput( device ) {
-      if( !this.selectedDevice && device ) {
+      if( !this.selectedDevice ) {
         navigator.mediaDevices.enumerateDevices().then( ( devices ) => {
           this.selectedDevice = _.last( devices )
           this.getVideoInput( this.selectedDevice )
