@@ -32,7 +32,6 @@ export default {
   mounted() {
     this.video = this.$refs['video']
     this.getVideoInput()
-
   },
   beforeDestroy() {
     this.readCode = 'readCode is not available'
@@ -54,11 +53,11 @@ export default {
       if( !this.selectedDevice ) {
         navigator.mediaDevices.enumerateDevices().then( ( devices ) => {
           this.selectedDevice = _.last( devices )
-          alert( this.selectedDevice )
           this.getVideoInput( this.selectedDevice )
         } )
       } else {
         let deviceId = _.get( device, 'deviceId' )
+
         let constraints
         if( deviceId ) {
           constraints = { video: { deviceId: deviceId ? { exact: deviceId } : undefined } }
