@@ -52,42 +52,32 @@ export default {
   },
   methods: {
     getVideoInput() {
+      let constraints
       if( this.selectedDeviceId ) {
-        alert( 1 )
-        const constraints = { video: { deviceId: this.selectedDeviceId ? { exact: this.selectedDeviceId } : undefined } }
-        alert( constraints )
-        navigator.mediaDevices.getUserMedia( constraints )
-          .then( stream => {
-            this.stream = stream
-            this.video.srcObject = stream
-            this.video.setAttribute( 'playsinline', true ) // 플레이어 파일이 아닌 스트림 화면으로 보여짐
-            this.video.play() // 실행
-
-            setTimeout( () => {
-              if( !this.readCode ) this.quaggarStart()
-            }, LOOP_INTERVAL )
-          } )
-          .catch( e => {console.error( 'error : ' + e )} )
+        constraints = { video: { deviceId: { exact: this.selectedDeviceId } } }
       } else {
-        alert( 2 )
-        const constraints = { video: { facingMode: 'environment' } }
-        navigator.mediaDevices.getUserMedia( constraints )
-          .then( this.gotStream )
-          .then( ( deviceInfos ) => {
-            this.gotDevices( deviceInfos )
-            this.getVideoInput()
-          } )
-          .catch( e => {console.error( 'error : ' + e )} )
+        this.selectedDeviceId = this.video.value
+        constraints = { video: { exact: 'environment' } }
       }
+
+      navigator.mediaDevices.getUserMedia( constraints )
+        .then( this.gotStream )
+        .then( ( deviceInfos ) => {
+          this.gotDevices( deviceInfos )
+          setTimeout( () => {
+            if( !this.readCode ) {
+              this.quaggarStart()
+            }
+          }, LOOP_INTERVAL )
+        } )
+        .catch( e => {console.error( 'error : ' + e )} )
     },
     gotDevices( deviceInfos ) {
-      alert( 3 )
-      let filteredDevices = _.filter( deviceInfos, deviceInfo => {
-        return deviceInfo.kind === 'videoinput'
-      } ).reverse()
+      this.devices = _.filter( deviceInfos, deviceInfo => deviceInfo.kind === 'videoinput' )
 
-      this.selectedDeviceId = filteredDevices[0].deviceId
-      alert( this.selectedDeviceId )
+      if( !this.selectedDeviceId ) {
+        this.selectedDeviceId = _.get( this.devices, '0.deviceId' )
+      }
     },
     gotStream( stream ) {
       this.stream = stream
@@ -105,30 +95,32 @@ export default {
       this.context.drawImage( this.video, 0, 0, this.canvas.width, this.canvas.height )
       this.img = this.canvas.toDataURL()
 
-      if( this.video.readyState === this.video.HAVE_ENOUGH_DATA ) {
-        Quagga.decodeSingle( {
-          src: this.img,
-          numOfWorkers: 0,  // Needs to be 0 when used within node
-          inputStream: {
-            size: 800  // restrict input-size to be 800px in width (long-side)
-          },
-          decoder: {
-            readers: ['ean_reader'] // List of active readers
-          },
-        }, ( result ) => {
-          if( _.get( result, 'codeResult' ) ) {
-            this.readCode = _.get( result, 'codeResult.code' )
-            this.$emit( 'codeResult', result )
-          } else {
-            console.log( 'not detected' )
-          }
-        } )
-      }
-
       setTimeout( () => {
-        if( !this.readCode ) this.quaggarStart()
+        if( !this.readCode ) {
+          this.quaggarStart()
+        }
+
+        if( this.video.readyState === this.video.HAVE_ENOUGH_DATA ) {
+          Quagga.decodeSingle( {
+            src: this.img,
+            numOfWorkers: 0,  // Needs to be 0 when used within node
+            inputStream: {
+              size: 800  // restrict input-size to be 800px in width (long-side)
+            },
+            decoder: {
+              readers: ['ean_reader'] // List of active readers
+            },
+          }, ( result ) => {
+            if( _.get( result, 'codeResult' ) ) {
+              this.readCode = _.get( result, 'codeResult.code' )
+              this.$emit( 'codeResult', result )
+            } else {
+              console.log( 'not detected' )
+            }
+          } )
+        }
       }, LOOP_INTERVAL )
-    },
+    }
   }
 }
 </script>
