@@ -1,5 +1,15 @@
 <template>
   <div class="read-qr-barcode">
+    <div class="device-select-area">
+      <div class="device-select">
+        <select v-model="selectedDeviceId" @change="changeVideoInput">
+          <option v-for="device in devices" :value="device.deviceId">
+            {{ device.label }}
+          </option>
+        </select>
+      </div>
+    </div>
+
     <div class="stream-area">
       <video class="video" ref="video" autoPlay></video>
       <canvas class="canvas" ref="canvas"></canvas>
@@ -23,7 +33,9 @@ export default {
       canvas: null,
       context: null,
       img: null,
+      videoSource: null,
 
+      devices: null,
       selectedDeviceId: null,
 
       readCode: ''
@@ -31,7 +43,9 @@ export default {
   },
   mounted() {
     this.video = this.$refs['video']
+    this.videoSource = this.video.value
     this.getVideoInput()
+
   },
   beforeDestroy() {
     this.readCode = 'readCode is not available'
@@ -50,40 +64,36 @@ export default {
   },
   methods: {
     getVideoInput() {
-      let constraints
-      if( this.selectedDeviceId ) {
-        constraints = { video: { deviceId: this.selectedDeviceId ? { exact: this.selectedDeviceId } : undefined } }
-      } else {
-        constraints = { video: { facingMode: 'environment' } }
-      }
+      const constraints = { video: { deviceId: this.videoSource ? { exact: this.videoSource } : undefined } }
 
       navigator.mediaDevices.getUserMedia( constraints )
-        .then( stream => {
-          this.stream = stream
-          this.video.srcObject = stream
-          this.video.setAttribute( 'playsinline', true ) // 플레이어 파일이 아닌 스트림 화면으로 보여짐
-          this.video.play() // 실행
-
-          if( !this.selectedDeviceId ) {
-            this.gotDevices()
-          }
-
+        .then( this.gotStream )
+        .then( ( deviceInfos ) => {
+          this.gotDevices( deviceInfos )
           setTimeout( () => {
-            if( !this.readCode ) this.quaggarStart()
+            if( !this.readCode ) {
+              this.quaggarStart()
+            }
           }, LOOP_INTERVAL )
         } )
         .catch( e => {console.error( 'error : ' + e )} )
     },
-    gotDevices() {
-      navigator.mediaDevices.enumerateDevices().then( ( deviceInfos ) => {
-        const selectedDevice = _.chain( deviceInfos )
-          .filter( deviceInfo => {
-            return deviceInfo.kind === 'videoinput'
-          } )
-          .last()
-        this.selectedDeviceId = _.get( selectedDevice, 'deviceId' )
-        alert( this.selectedDeviceId )
+    gotDevices( deviceInfos ) {
+      this.devices = _.filter( deviceInfos, deviceInfo => {
+        return deviceInfo.kind === 'videoinput'
       } )
+
+      if( !this.selectedDeviceId ) {
+        this.selectedDeviceId = _.get( _.last( this.devices ), 'deviceId' )
+      }
+    },
+    gotStream( stream ) {
+      this.stream = stream
+      this.video.srcObject = stream
+      this.video.setAttribute( 'playsinline', true ) // 플레이어 파일이 아닌 스트림 화면으로 보여짐
+      this.video.play() // 실행
+
+      return navigator.mediaDevices.enumerateDevices()
     },
     quaggarStart() {
       this.canvas = this.$refs['canvas']
@@ -116,7 +126,7 @@ export default {
       setTimeout( () => {
         if( !this.readCode ) this.quaggarStart()
       }, LOOP_INTERVAL )
-    }
+    },
   }
 }
 </script>
