@@ -60,7 +60,7 @@ export default {
           navigator.mediaDevices.enumerateDevices().then( ( devices ) => {
             this.devices = devices
 
-            alert( _.map( devices, d => JSON.stringify( d ) ) )
+            alert( _.map( devices, d => d.label ) )
           } )
           setTimeout( () => {
             if( !this.readCode ) this.quaggarStart()
@@ -81,7 +81,7 @@ export default {
           src: this.img,
           numOfWorkers: 0,  // Needs to be 0 when used within node
           inputStream: {
-            size: 1000  // restrict input-size to be 800px in width (long-side)
+            size: 400  // restrict input-size to be 800px in width (long-side)
           },
           decoder: {
             readers: ['ean_reader'] // List of active readers
