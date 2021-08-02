@@ -85,7 +85,13 @@ export default {
           src: this.img,
           numOfWorkers: 0,  // Needs to be 0 when used within node
           inputStream: {
-            size: 400  // restrict input-size to be 800px in width (long-side)
+            constraints: {
+              width: { min: 640 },
+              height: { min: 480 },
+              aspectRatio: { min: 1, max: 100 },
+              facingMode: 'environment' // or user
+            },
+            size: 800  // restrict input-size to be 800px in width (long-side)
           },
           decoder: {
             readers: ['ean_reader'] // List of active readers
