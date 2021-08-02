@@ -85,7 +85,7 @@ export default {
           src: this.img,
           numOfWorkers: 0,  // Needs to be 0 when used within node
           inputStream: {
-            size: 800  // restrict input-size to be 800px in width (long-side)
+            size: 400  // restrict input-size to be 800px in width (long-side)
           },
           decoder: {
             readers: ['ean_reader'] // List of active readers
