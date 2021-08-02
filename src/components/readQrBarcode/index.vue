@@ -67,7 +67,7 @@ export default {
           if( !this.selectedDeviceId ) {
             this.gotDevices()
           }
-      
+
           setTimeout( () => {
             if( !this.readCode ) this.quaggarStart()
           }, LOOP_INTERVAL )
@@ -82,8 +82,8 @@ export default {
           } )
           .last()
         this.selectedDeviceId = _.get( selectedDevice, 'deviceId' )
+        alert( this.selectedDeviceId )
       } )
-      alert( this.selectedDeviceId )
     },
     quaggarStart() {
       this.canvas = this.$refs['canvas']
