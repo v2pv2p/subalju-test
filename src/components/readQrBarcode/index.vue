@@ -56,7 +56,6 @@ export default {
       if( this.selectedDeviceId ) {
         constraints = { video: { deviceId: { exact: this.selectedDeviceId } } }
       } else {
-        this.selectedDeviceId = this.video.value
         constraints = { video: { exact: 'environment' } }
       }
 
@@ -73,7 +72,7 @@ export default {
             }, LOOP_INTERVAL )
           }
         } )
-        .catch( e => {console.error( 'error : ' + e )} )
+        .catch( e => { console.error( 'error : ' + e ) } )
     },
     gotDevices( deviceInfos ) {
       this.devices = _.filter( deviceInfos, deviceInfo => deviceInfo.kind === 'videoinput' ).reverse()
