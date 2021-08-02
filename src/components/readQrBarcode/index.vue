@@ -1,15 +1,5 @@
 <template>
   <div class="read-qr-barcode">
-    <div class="device-select-area">
-      <div class="device-select">
-        <select v-model="selectedDeviceId" @change="changeVideoInput">
-          <option v-for="device in devices" :value="device.deviceId">
-            {{ device.label }}
-          </option>
-        </select>
-      </div>
-    </div>
-
     <div class="stream-area">
       <video class="video" ref="video" autoPlay></video>
       <canvas class="canvas" ref="canvas"></canvas>
@@ -33,7 +23,6 @@ export default {
       canvas: null,
       context: null,
       img: null,
-      videoSource: null,
 
       devices: null,
       selectedDeviceId: null,
@@ -43,7 +32,6 @@ export default {
   },
   mounted() {
     this.video = this.$refs['video']
-    this.videoSource = this.video.value
     this.getVideoInput()
 
   },
@@ -64,19 +52,31 @@ export default {
   },
   methods: {
     getVideoInput() {
-      const constraints = { video: { deviceId: this.videoSource ? { exact: this.videoSource } : undefined } }
+      let constraints
+      if( this.selectedDeviceId ) {
+        constraints = { video: { deviceId: this.selectedDeviceId ? { exact: this.selectedDeviceId } : undefined } }
+        navigator.mediaDevices.getUserMedia( constraints )
+          .then( stream => {
+            this.stream = stream
+            this.video.srcObject = stream
+            this.video.setAttribute( 'playsinline', true ) // 플레이어 파일이 아닌 스트림 화면으로 보여짐
+            this.video.play() // 실행
 
-      navigator.mediaDevices.getUserMedia( constraints )
-        .then( this.gotStream )
-        .then( ( deviceInfos ) => {
-          this.gotDevices( deviceInfos )
-          setTimeout( () => {
-            if( !this.readCode ) {
-              this.quaggarStart()
-            }
-          }, LOOP_INTERVAL )
-        } )
-        .catch( e => {console.error( 'error : ' + e )} )
+            setTimeout( () => {
+              if( !this.readCode ) this.quaggarStart()
+            }, LOOP_INTERVAL )
+          } )
+          .catch( e => {console.error( 'error : ' + e )} )
+      } else {
+        constraints = { video: { facingMode: 'environment' } }
+
+        navigator.mediaDevices.getUserMedia( constraints )
+          .then( this.gotStream )
+          .then( ( deviceInfos ) => {
+            this.gotDevices( deviceInfos )
+          } )
+          .catch( e => {console.error( 'error : ' + e )} )
+      }
     },
     gotDevices( deviceInfos ) {
       this.devices = _.filter( deviceInfos, deviceInfo => {
@@ -137,17 +137,6 @@ export default {
 
   width: 100%;
   height: 100%;
-
-  .device-select-area {
-    top: 0;
-
-    .device-select-title {
-    }
-
-    .device-select {
-
-    }
-  }
 
   .stream-area {
     width: 100%;
