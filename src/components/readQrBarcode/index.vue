@@ -30,8 +30,6 @@ export default {
     }
   },
   mounted() {
-    this.video = this.$refs['video']
-
     navigator.mediaDevices.enumerateDevices().then( ( devices ) => {
       this.selectedDevice = _.last( devices )
       this.getVideoInput( this.selectedDevice )
@@ -54,8 +52,10 @@ export default {
   },
   methods: {
     getVideoInput( device ) {
-      let deviceId = _.get( device, 'deviceId' )
+      this.video = this.$refs['video']
 
+      let deviceId = _.get( device, 'deviceId' )
+      alert( deviceId )
       navigator.mediaDevices.getUserMedia( { video: { deviceId: deviceId ? { exact: deviceId } : undefined } } )
         .then( stream => {
           this.stream = stream
