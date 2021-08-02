@@ -31,7 +31,11 @@ export default {
   },
   mounted() {
     this.video = this.$refs['video']
-    this.getVideoInput()
+
+    navigator.mediaDevices.enumerateDevices().then( ( devices ) => {
+      this.selectedDevice = _.last( devices )
+      this.getVideoInput( this.selectedDevice )
+    } )
   },
   beforeDestroy() {
     this.readCode = 'readCode is not available'
@@ -50,34 +54,20 @@ export default {
   },
   methods: {
     getVideoInput( device ) {
-      if( !this.selectedDevice ) {
-        navigator.mediaDevices.enumerateDevices().then( ( devices ) => {
-          this.selectedDevice = _.last( devices )
-          this.getVideoInput( this.selectedDevice )
+      let deviceId = _.get( device, 'deviceId' )
+
+      navigator.mediaDevices.getUserMedia( { video: { deviceId: deviceId ? { exact: deviceId } : undefined } } )
+        .then( stream => {
+          this.stream = stream
+          this.video.srcObject = stream
+          this.video.setAttribute( 'playsinline', true ) // 플레이어 파일이 아닌 스트림 화면으로 보여짐
+          this.video.play() // 실행
+
+          setTimeout( () => {
+            if( !this.readCode ) this.quaggarStart()
+          }, LOOP_INTERVAL )
         } )
-      } else {
-        let deviceId = _.get( device, 'deviceId' )
-
-        let constraints
-        if( deviceId ) {
-          constraints = { video: { deviceId: deviceId ? { exact: deviceId } : undefined } }
-        } else {
-          constraints = { video: { facingMode: 'environment' } }
-        }
-
-        navigator.mediaDevices.getUserMedia( constraints )
-          .then( stream => {
-            this.stream = stream
-            this.video.srcObject = stream
-            this.video.setAttribute( 'playsinline', true ) // 플레이어 파일이 아닌 스트림 화면으로 보여짐
-            this.video.play() // 실행
-
-            setTimeout( () => {
-              if( !this.readCode ) this.quaggarStart()
-            }, LOOP_INTERVAL )
-          } )
-          .catch( e => {console.error( 'error : ' + e )} )
-      }
+        .catch( e => {console.error( 'error : ' + e )} )
     },
     quaggarStart() {
       this.canvas = this.$refs['canvas']
