@@ -87,7 +87,7 @@ export default {
 
       if( !this.selectedDeviceId ) {
         this.selectedDeviceId = _.get( _.last( this.devices ), 'deviceId' )
-        alert( this.selectedDeviceId )
+        alert( JSON.stringify( this.selectedDeviceId ) )
       }
     },
     gotStream( stream ) {
