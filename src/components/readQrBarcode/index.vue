@@ -10,7 +10,7 @@
 
 <script>
 import _ from 'lodash'
-import Quagga from 'vue-quaggajs'
+import Quagga from '@ericblade/quagga2'
 
 const LOOP_INTERVAL = 20
 
