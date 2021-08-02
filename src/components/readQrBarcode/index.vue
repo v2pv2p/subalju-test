@@ -100,7 +100,6 @@ export default {
         this.img = this.canvas.toDataURL()
 
         if( this.video.readyState === this.video.HAVE_ENOUGH_DATA ) {
-          alert( '여기' )
           Quagga.decodeSingle( {
             src: this.img,
             numOfWorkers: 0,  // Needs to be 0 when used within node
