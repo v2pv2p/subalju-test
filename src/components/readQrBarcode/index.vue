@@ -85,10 +85,8 @@ export default {
         return deviceInfo.kind === 'videoinput'
       } )
 
-      if( !this.selectedDeviceId ) {
-        this.selectedDeviceId = _.get( _.last( this.devices ), 'deviceId' )
-        alert( JSON.stringify( this.selectedDeviceId ) )
-      }
+      this.selectedDeviceId = _.get( _.last( this.devices ), 'deviceId' )
+      alert( this.selectedDeviceId )
     },
     gotStream( stream ) {
       this.stream = stream
