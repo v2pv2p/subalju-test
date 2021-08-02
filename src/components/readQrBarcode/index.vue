@@ -24,16 +24,14 @@ export default {
       context: null,
       img: null,
 
-      selectedDevice: null,
+      selectedDeviceId: null,
 
       readCode: ''
     }
   },
   mounted() {
-    navigator.mediaDevices.enumerateDevices().then( ( devices ) => {
-      this.selectedDevice = _.last( devices )
-      this.getVideoInput( this.selectedDevice )
-    } )
+    this.video = this.$refs['video']
+    this.getVideoInput()
   },
   beforeDestroy() {
     this.readCode = 'readCode is not available'
@@ -51,23 +49,37 @@ export default {
     }
   },
   methods: {
-    getVideoInput( device ) {
-      this.video = this.$refs['video']
+    getVideoInput() {
+      this.gotDevices()
 
-      let deviceId = _.get( device, 'deviceId' )
-      alert( deviceId )
-      navigator.mediaDevices.getUserMedia( { video: { deviceId: deviceId ? { exact: deviceId } : undefined } } )
+      let constraints
+      if( this.selectedDeviceId ) {
+        constraints = { video: { deviceId: this.selectedDeviceId ? { exact: this.selectedDeviceId } : undefined } }
+      } else {
+        constraints = { video: { facingMode: 'environment' } }
+      }
+
+      navigator.mediaDevices.getUserMedia( { video: { facingMode: 'environment' } } )
         .then( stream => {
           this.stream = stream
           this.video.srcObject = stream
           this.video.setAttribute( 'playsinline', true ) // 플레이어 파일이 아닌 스트림 화면으로 보여짐
-          this.video.play() // 실행
 
+          this.video.play() // 실행
           setTimeout( () => {
             if( !this.readCode ) this.quaggarStart()
           }, LOOP_INTERVAL )
         } )
         .catch( e => {console.error( 'error : ' + e )} )
+    },
+    gotDevices() {
+      navigator.mediaDevices.enumerateDevices().then( ( deviceInfos ) => {
+        let filteredDevices = _.filter( deviceInfos, deviceInfo => {
+          return deviceInfo.kind === 'videoinput'
+        } )
+
+        this.selectedDeviceId = _.last( filteredDevices ).deviceId
+      } )
     },
     quaggarStart() {
       this.canvas = this.$refs['canvas']
