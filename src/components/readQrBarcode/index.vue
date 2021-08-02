@@ -1,23 +1,10 @@
 <template>
   <div class="read-qr-barcode">
-    <div class="device-select-area">
-      <div class="device-select">
-        111
-        <select v-model="selectedDeviceId" @change="changeVideoInput">
-          <option v-for="device in devices" :value="device.deviceId">
-            {{ device.label }}
-          </option>
-        </select>
-      </div>
-    </div>
-
-    <div class="stream-area">
+    <div class="stream-area" @click="changeVideoInput">
       <video class="video" ref="video" autoPlay></video>
       <canvas class="canvas" ref="canvas" v-show="false"></canvas>
       <img class="image" ref='canvasImgFile' :src="img" v-show="false">
     </div>
-
-
   </div>
 </template>
 
@@ -124,7 +111,7 @@ export default {
               readers: ['ean_reader'] // List of active readers
             },
           }, ( result ) => {
-            alert( JSON.stringify(result) )
+            alert( JSON.stringify( result ) )
             if( _.get( result, 'codeResult' ) ) {
               this.readCode = _.get( result, 'codeResult.code' )
               this.$emit( 'codeResult', result )
@@ -153,6 +140,10 @@ export default {
 
   width: 100%;
   height: 100%;
+
+  .device-select-area {
+    z-index: 99999999;
+  }
 
   .stream-area {
     width: 100%;
