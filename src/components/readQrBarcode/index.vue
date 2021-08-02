@@ -1,9 +1,9 @@
 <template>
-  <div className="read-qr-barcode">
-    <div className="stream-area">
-      <video className="video" ref="video" autoPlay></video>
-      <canvas className="canvas" ref="canvas"></canvas>
-      <img className="image" ref='canvasImgFile' :src="img">
+  <div class="read-qr-barcode">
+    <div class="stream-area">
+      <video class="video" ref="video" autoPlay></video>
+      <canvas class="canvas" ref="canvas"></canvas>
+      <img class="image" ref='canvasImgFile' :src="img">
     </div>
   </div>
 </template>
