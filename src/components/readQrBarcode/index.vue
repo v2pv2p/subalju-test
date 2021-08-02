@@ -59,7 +59,7 @@ export default {
         constraints = { video: { facingMode: 'environment' } }
       }
 
-      navigator.mediaDevices.getUserMedia( { video: { facingMode: 'environment' } } )
+      navigator.mediaDevices.getUserMedia( constraints )
         .then( stream => {
           this.stream = stream
           this.video.srcObject = stream
