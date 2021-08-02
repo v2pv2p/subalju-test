@@ -55,6 +55,7 @@ export default {
       if( this.selectedDeviceId ) {
         alert( 1 )
         const constraints = { video: { deviceId: this.selectedDeviceId ? { exact: this.selectedDeviceId } : undefined } }
+        alert( constraints )
         navigator.mediaDevices.getUserMedia( constraints )
           .then( stream => {
             this.stream = stream
