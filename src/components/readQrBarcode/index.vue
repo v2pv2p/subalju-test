@@ -82,11 +82,11 @@ export default {
     },
     gotDevices( deviceInfos ) {
       alert( 3 )
-      this.devices = _.filter( deviceInfos, deviceInfo => {
+      let filteredDevices = _.filter( deviceInfos, deviceInfo => {
         return deviceInfo.kind === 'videoinput'
-      } )
+      } ).reverse()
 
-      this.selectedDeviceId = _.get( _.last( this.devices ), 'deviceId' )
+      this.selectedDeviceId = filteredDevices[0].deviceId
       alert( this.selectedDeviceId )
     },
     gotStream( stream ) {
