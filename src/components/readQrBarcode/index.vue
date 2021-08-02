@@ -54,6 +54,7 @@ export default {
       if( !this.selectedDevice ) {
         navigator.mediaDevices.enumerateDevices().then( ( devices ) => {
           this.selectedDevice = _.last( devices )
+          alert( this.selectedDevice )
           this.getVideoInput( this.selectedDevice )
         } )
       } else {
