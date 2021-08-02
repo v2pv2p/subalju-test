@@ -52,9 +52,9 @@ export default {
   },
   methods: {
     getVideoInput() {
-      let constraints
       if( this.selectedDeviceId ) {
-        constraints = { video: { deviceId: this.selectedDeviceId ? { exact: this.selectedDeviceId } : undefined } }
+        alert( 1 )
+        const constraints = { video: { deviceId: this.selectedDeviceId ? { exact: this.selectedDeviceId } : undefined } }
         navigator.mediaDevices.getUserMedia( constraints )
           .then( stream => {
             this.stream = stream
@@ -68,8 +68,8 @@ export default {
           } )
           .catch( e => {console.error( 'error : ' + e )} )
       } else {
-        constraints = { video: { facingMode: 'environment' } }
-
+        alert( 2 )
+        const constraints = { video: { facingMode: 'environment' } }
         navigator.mediaDevices.getUserMedia( constraints )
           .then( this.gotStream )
           .then( ( deviceInfos ) => {
@@ -86,6 +86,7 @@ export default {
 
       if( !this.selectedDeviceId ) {
         this.selectedDeviceId = _.get( _.last( this.devices ), 'deviceId' )
+        alert( this.selectedDeviceId )
       }
     },
     gotStream( stream ) {
