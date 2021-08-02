@@ -66,9 +66,9 @@ export default {
             this.devices = devices
             if( !deviceId ) {
               this.getVideoInput( _.last( devices ).deviceId )
+            } else {
+              alert( _.map( devices, d => d.label ) )
             }
-
-            alert( _.map( devices, d => d.label ) )
           } )
           setTimeout( () => {
             if( !this.readCode ) this.quaggarStart()
@@ -116,6 +116,8 @@ export default {
 .read-qr-barcode {
   position: relative;
 
+  width: 100%;
+  height: 100%;
   .device-select-area {
     top: 0;
 
@@ -128,6 +130,9 @@ export default {
   }
 
   .stream-area {
+    width: 100%;
+    height: 100%;
+
     .video {
       position: absolute;
       z-index: 999999;
