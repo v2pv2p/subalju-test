@@ -49,6 +49,8 @@ export default {
     padding: 20px;
     background-color: gold;
     border-radius: 10px;
+
+    position: absolute;
   }
 }
 

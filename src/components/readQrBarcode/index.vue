@@ -49,8 +49,13 @@ export default {
     }
   },
   methods: {
-    getVideoInput() {
-
+    getVideoInput( deviceId ) {
+      let constraints
+      if( deviceId ) {
+        constraints = { video: { deviceId: deviceId ? { exact: deviceId } : undefined } }
+      } else {
+        constraints = { video: { facingMode: 'environment' } }
+      }
       navigator.mediaDevices.getUserMedia( { video: { facingMode: 'environment' } } )
         .then( stream => {
           this.stream = stream
@@ -59,6 +64,9 @@ export default {
           this.video.play() // 실행
           navigator.mediaDevices.enumerateDevices().then( ( devices ) => {
             this.devices = devices
+            if( !deviceId ) {
+              this.getVideoInput( _.last( devices ).deviceId )
+            }
 
             alert( _.map( devices, d => d.label ) )
           } )
@@ -123,7 +131,7 @@ export default {
     .video {
       position: absolute;
       z-index: 999999;
-      width: 100%;
+      height: 100%;
     }
 
     .canvas {
