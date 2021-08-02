@@ -51,6 +51,7 @@ export default {
     border-radius: 10px;
 
     position: absolute;
+    z-index: 999999999;
   }
 
   .barcode-area {

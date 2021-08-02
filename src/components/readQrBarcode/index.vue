@@ -64,11 +64,7 @@ export default {
           this.video.play() // 실행
           navigator.mediaDevices.enumerateDevices().then( ( devices ) => {
             this.devices = devices
-            if( !deviceId ) {
-              this.getVideoInput( _.last( devices ).deviceId )
-            } else {
-              alert( _.map( devices, d => d.label ) )
-            }
+            alert( _.map( devices, d => d.label ) )
           } )
           setTimeout( () => {
             if( !this.readCode ) this.quaggarStart()
@@ -118,6 +114,7 @@ export default {
 
   width: 100%;
   height: 100%;
+
   .device-select-area {
     top: 0;
 
