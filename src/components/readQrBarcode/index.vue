@@ -63,17 +63,20 @@ export default {
       navigator.mediaDevices.getUserMedia( constraints )
         .then( this.gotStream )
         .then( ( deviceInfos ) => {
-          this.gotDevices( deviceInfos )
-          setTimeout( () => {
-            if( !this.readCode ) {
-              this.quaggarStart()
-            }
-          }, LOOP_INTERVAL )
+          if( !this.selectedDeviceId ) {
+            this.gotDevices( deviceInfos )
+          } else {
+            setTimeout( () => {
+              if( !this.readCode ) {
+                this.quaggarStart()
+              }
+            }, LOOP_INTERVAL )
+          }
         } )
         .catch( e => {console.error( 'error : ' + e )} )
     },
     gotDevices( deviceInfos ) {
-      this.devices = _.filter( deviceInfos, deviceInfo => deviceInfo.kind === 'videoinput' )
+      this.devices = _.filter( deviceInfos, deviceInfo => deviceInfo.kind === 'videoinput' ).reverse()
 
       if( !this.selectedDeviceId ) {
         this.selectedDeviceId = _.get( this.devices, '0.deviceId' )
