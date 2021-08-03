@@ -17,8 +17,7 @@ export default {
 
 <style lang="scss">
 #app {
-  height: 100%;
-  min-height: 100%;
+  min-height: 100vh;
   overflow-y: hidden;
 
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
@@ -28,7 +27,7 @@ export default {
 
   .router {
     width: 100%;
-    height: 100%;
+    min-height: 100%;
     overflow: hidden;
   }
 
