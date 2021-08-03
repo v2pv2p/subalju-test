@@ -79,7 +79,7 @@ export default {
           this.deviceCount = filteredDevices.length
           let lastDeviceId = _.get( _.last( filteredDevices ), 'deviceId' )
           alert( lastDeviceId )
-          if( !this.selectedDeviceId && lastDeviceId ) {
+          if( !this.selectedDeviceId ) {
             this.selectedDeviceId = lastDeviceId
             this.getVideoInput( this.selectedDeviceId )
           }
