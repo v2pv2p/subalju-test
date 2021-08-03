@@ -2,7 +2,7 @@
   <div class="popup-wrapper">
     <div class="add-qr-barcode">
       <div class="close-btn" @click.self="closePopup">
-        <m-icon>close</m-icon>
+        close
       </div>
       <div class="barcode-area">
         <read-qr-barcode @codeResult="setCodeResult"></read-qr-barcode>

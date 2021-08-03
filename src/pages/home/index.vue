@@ -103,7 +103,7 @@ export default {
   }
 
   .product-data-area {
-    height: 700px;
+    height: 400px;
     overflow: auto;
 
     .product-info-area {
