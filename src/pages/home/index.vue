@@ -5,15 +5,17 @@
       <div class="barcode-scan-btn" @click="barcodeScan">바코드 스캔</div>
     </div>
     {{ barcode }}
-    <div class="product-info-area" v-if="productInfoDataLoaded">
-      <div v-for="product in productInfoOfBarcode">
-        {{ product }}
+    <div class="product-data-area"  v-if="productInfoDataLoaded || nutritionInfoDataLoaded">
+      <div class="product-info-area" v-if="productInfoDataLoaded">
+        <div v-for="product in productInfoOfBarcode">
+          {{ product }}
+        </div>
       </div>
-    </div>
 
-    <div class="product-nutrition-info-area" v-if="nutritionInfoDataLoaded">
-      <div v-for="nutrition in nutritionInfoOfProductName">
-        {{ nutrition }}
+      <div class="product-nutrition-info-area" v-if="nutritionInfoDataLoaded">
+        <div v-for="nutrition in nutritionInfoOfProductName">
+          {{ nutrition }}
+        </div>
       </div>
     </div>
   </div>
@@ -99,12 +101,17 @@ export default {
     }
   }
 
-  .product-info-area {
-    background-color: green;
-  }
+  .product-data-area {
+    height: 700px;
+    overflow: auto;
 
-  .product-nutrition-info-area {
-    background-color: pink;
+    .product-info-area {
+      background-color: green;
+    }
+
+    .product-nutrition-info-area {
+      background-color: pink;
+    }
   }
 }
 </style>

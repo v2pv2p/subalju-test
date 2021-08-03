@@ -51,7 +51,6 @@ export default {
   methods: {
     getVideoInput( deviceId ) {
       let constraints = { video: { deviceId: deviceId ? { exact: deviceId } : undefined } }
-      alert(1)
       navigator.mediaDevices.getUserMedia( constraints )
         .then( stream => {
           if( !deviceId ) {
@@ -121,6 +120,8 @@ export default {
 
   width: 100%;
   height: 100%;
+
+  overflow: hidden;
 
   .device-select-area {
     top: 0;
