@@ -1,9 +1,9 @@
 <template>
   <div class="read-qr-barcode">
-    <div class="stream-area" @click="changeVideoInput">
+    <div class="stream-area">
       <video class="video" ref="video" autoPlay></video>
-      <canvas class="canvas" ref="canvas" v-show="false"></canvas>
-      <img class="image" ref='canvasImgFile' :src="img" v-show="false">
+      <canvas class="canvas" ref="canvas"></canvas>
+      <img class="image" ref='canvasImgFile' :src="img">
     </div>
   </div>
 </template>
@@ -23,9 +23,7 @@ export default {
       canvas: null,
       context: null,
       img: null,
-      videoSource: null,
 
-      devices: null,
       selectedDeviceId: null,
 
       readCode: ''
@@ -33,9 +31,7 @@ export default {
   },
   mounted() {
     this.video = this.$refs['video']
-    this.videoSource = this.video.value
     this.getVideoInput()
-
   },
   beforeDestroy() {
     this.readCode = 'readCode is not available'
@@ -53,85 +49,83 @@ export default {
     }
   },
   methods: {
-    changeVideoInput() {
-      this.videoSource = this.selectedDeviceId
-      this.getVideoInput()
-    },
-    getVideoInput() {
-      const constraints = { video: { deviceId: this.videoSource ? { exact: this.videoSource } : undefined } }
-
+    // getVideoInput() {
+    //   navigator.mediaDevices.getUserMedia( { video: { facingMode: 'environment' } } )
+    //     .then( stream => {
+    //       this.stream = stream
+    //       this.video.srcObject = stream
+    //       this.video.setAttribute( 'playsinline', true ) // 플레이어 파일이 아닌 스트림 화면으로 보여짐
+    //       this.video.play() // 실행
+    //       return navigator.mediaDevices.enumerateDevices()
+    //     } )
+    //     .then( ( devices ) => {
+    //       setTimeout( () => {
+    //         if( !this.readCode ) this.quaggarStart()
+    //       }, LOOP_INTERVAL )
+    //     } )
+    //     .catch( e => { console.error( 'error : ' + e ) } )
+    // },
+    getVideoInput( deviceId ) {
+      const constraints = { video: { deviceId: deviceId ? { exact: deviceId } : undefined } }
       navigator.mediaDevices.getUserMedia( constraints )
-        .then( this.gotStream )
-        .then( ( deviceInfos ) => {
-          if( this.selectedDeviceId ) {
+        .then( stream => {
+          this.stream = stream
+          this.video.srcObject = stream
+          this.video.setAttribute( 'playsinline', true ) // 플레이어 파일이 아닌 스트림 화면으로 보여짐
+          this.video.play() // 실행
+
+          if( !this.selectedDeviceId ) {
+            return navigator.mediaDevices.enumerateDevices()
+          } else {
             setTimeout( () => {
               if( !this.readCode ) {
                 this.quaggarStart()
               }
             }, LOOP_INTERVAL )
-          } else {
-            this.gotDevices( deviceInfos )
-            this.getVideoInput()
           }
         } )
-        .catch( e => {console.error( 'error : ' + e )} )
-    },
-    gotDevices( deviceInfos ) {
-      this.devices = _.filter( deviceInfos, deviceInfo => {
-        return deviceInfo.kind === 'videoinput'
-      } ).reverse()
-
-      if( !this.selectedDeviceId ) {
-        this.selectedDeviceId = this.devices[0].deviceId
-        this.changeVideoInput()
-      }
-    },
-    gotStream( stream ) {
-      this.stream = stream
-      this.video.srcObject = stream
-      this.video.setAttribute( 'playsinline', true ) // required to tell iOS safari we don't want fullscreen
-      this.video.play()
-      // Refresh button list in case labels have become available
-      return navigator.mediaDevices.enumerateDevices()
+        .then( ( devices ) => {
+          let device = _.last( devices )
+          let deviceId = _.get( device, 'deviceId' )
+          if( !this.selectedDeviceId && deviceId ) {
+            this.selectedDeviceId = deviceId
+            this.getVideoInput( this.selectedDeviceId )
+          }
+        } )
+        .catch( e => { console.error( 'error : ' + e ) } )
     },
     quaggarStart() {
-      try {
-        this.canvas = this.$refs['canvas']
-        this.context = this.canvas.getContext( '2d' )
-        this.canvas.width = this.video.clientWidth
-        this.canvas.height = this.video.clientHeight
-        this.context.drawImage( this.video, 0, 0, this.canvas.width, this.canvas.height )
-        this.img = this.canvas.toDataURL()
+      this.canvas = this.$refs['canvas']
+      this.context = this.canvas.getContext( '2d' )
+      this.canvas.width = this.video.clientWidth
+      this.canvas.height = this.video.clientHeight
+      this.context.drawImage( this.video, 0, 0, this.canvas.width, this.canvas.height )
+      this.img = this.canvas.toDataURL()
 
-        if( this.video.readyState === this.video.HAVE_ENOUGH_DATA ) {
-          Quagga.decodeSingle( {
-            src: this.img,
-            numOfWorkers: 0,  // Needs to be 0 when used within node
-            inputStream: {
-              size: 800 // restrict input-size to be 800px in width (long-side)
-            },
-            decoder: {
-              readers: ['ean_reader'] // List of active readers
-            },
-          }, ( result ) => {
-            if( _.get( result, 'codeResult' ) ) {
-              this.readCode = _.get( result, 'codeResult.code' )
-              this.$emit( 'codeResult', result )
-            } else {
-              console.log( 'not detected' )
-            }
-          } )
-        }
-        setTimeout( () => {
-          if( !this.readCode ) {
-            this.quaggarStart()
+      if( this.video.readyState === this.video.HAVE_ENOUGH_DATA ) {
+        Quagga.decodeSingle( {
+          src: this.img,
+          numOfWorkers: 0,  // Needs to be 0 when used within node
+          inputStream: {
+            size: 800  // restrict input-size to be 800px in width (long-side)
+          },
+          decoder: {
+            readers: ['ean_reader'] // List of active readers
+          },
+        }, ( result ) => {
+          if( _.get( result, 'codeResult' ) ) {
+            this.readCode = _.get( result, 'codeResult.code' )
+            this.$emit( 'codeResult', result )
+          } else {
+            console.log( 'not detected' )
           }
-        }, LOOP_INTERVAL )
-      } catch( error ) {
-        alert( 'QR/Barcode reading error' + error )
-        console.error( 'QR/Barcode reading error', error )
+        } )
       }
-    },
+
+      setTimeout( () => {
+        if( !this.readCode ) this.quaggarStart()
+      }, LOOP_INTERVAL )
+    }
   }
 }
 </script>
@@ -144,7 +138,14 @@ export default {
   height: 100%;
 
   .device-select-area {
-    z-index: 99999999;
+    top: 0;
+
+    .device-select-title {
+    }
+
+    .device-select {
+
+    }
   }
 
   .stream-area {
