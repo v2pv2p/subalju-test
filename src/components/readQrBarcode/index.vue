@@ -50,13 +50,7 @@ export default {
   },
   methods: {
     getVideoInput( deviceId ) {
-      let constraints
-      if( deviceId ) {
-        constraints = { video: { deviceId: deviceId ? { exact: deviceId } : undefined } }
-      } else {
-        constraints = { video: { facingMode: 'environment' } }
-      }
-      alert( 12 + JSON.stringify( constraints ) )
+      let constraints = { video: deviceId ? { deviceId: { exact: deviceId } } : { fancingMode: 'environment' } }
       navigator.mediaDevices.getUserMedia( constraints )
         .then( stream => {
           this.stream = stream
