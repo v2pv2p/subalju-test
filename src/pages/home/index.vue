@@ -77,7 +77,6 @@ export default {
 .home-wrapper {
   height: 100%;
   width: 100%;
-  overflow: hidden;
 
   //background-color: #42b983;
   .barcode-area {

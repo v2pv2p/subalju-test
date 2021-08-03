@@ -39,9 +39,6 @@ export default {
 .add-qr-barcode {
   height: 100%;
   width: 100%;
-
-  overflow: hidden;
-
   background-color: #000000;
 
   .close-btn {
