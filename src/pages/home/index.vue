@@ -41,7 +41,7 @@ export default {
   },
   methods: {
     barcodeScan() {
-      this.$popupManager.open( addQrBarcode ).promise.then( res => {
+      this.$popupManager.open( addQrBarcode, {}, true ).promise.then( res => {
         this.barcode = res
         this.getProductData()
       } )
