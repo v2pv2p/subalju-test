@@ -49,26 +49,10 @@ export default {
     }
   },
   methods: {
-    // getVideoInput() {
-    //   navigator.mediaDevices.getUserMedia( { video: { facingMode: 'environment' } } )
-    //     .then( stream => {
-    //       this.stream = stream
-    //       this.video.srcObject = stream
-    //       this.video.setAttribute( 'playsinline', true ) // 플레이어 파일이 아닌 스트림 화면으로 보여짐
-    //       this.video.play() // 실행
-    //       return navigator.mediaDevices.enumerateDevices()
-    //     } )
-    //     .then( ( devices ) => {
-    //       setTimeout( () => {
-    //         if( !this.readCode ) this.quaggarStart()
-    //       }, LOOP_INTERVAL )
-    //     } )
-    //     .catch( e => { console.error( 'error : ' + e ) } )
-    // },
     getVideoInput( deviceId ) {
       let constraints
       if( deviceId ) {
-        constraints = { video: { deviceId: { exact: deviceId } } }
+        constraints = { video: { deviceId: deviceId ? { exact: deviceId } : undefined } }
       } else {
         constraints = { video: { facingMode: 'environment' } }
       }
