@@ -51,6 +51,7 @@ export default {
   methods: {
     getVideoInput( deviceId ) {
       let constraints = { video: { deviceId: deviceId ? { exact: deviceId } : undefined } }
+      alert(1)
       navigator.mediaDevices.getUserMedia( constraints )
         .then( stream => {
           if( !deviceId ) {
@@ -60,7 +61,7 @@ export default {
             this.video.srcObject = stream
             this.video.setAttribute( 'playsinline', true ) // 플레이어 파일이 아닌 스트림 화면으로 보여짐
             this.video.play() // 실행
-            
+
             setTimeout( () => {
               if( !this.readCode ) {
                 this.quaggarStart()
