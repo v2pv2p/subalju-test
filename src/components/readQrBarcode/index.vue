@@ -56,7 +56,7 @@ export default {
       } else {
         constraints = { video: { facingMode: 'environment' } }
       }
-      alert( 1 + JSON.stringify( constraints ) )
+      alert( 12 + JSON.stringify( constraints ) )
       navigator.mediaDevices.getUserMedia( constraints )
         .then( stream => {
           this.stream = stream
@@ -64,7 +64,7 @@ export default {
           this.video.setAttribute( 'playsinline', true ) // 플레이어 파일이 아닌 스트림 화면으로 보여짐
           this.video.play() // 실행
 
-          if( !this.selectedDeviceId ) {
+          if( !deviceId ) {
             return navigator.mediaDevices.enumerateDevices()
           } else {
             setTimeout( () => {
@@ -76,9 +76,9 @@ export default {
         } )
         .then( ( devices ) => {
           let device = _.filter( devices, ( device ) => device.kind === 'videoinput' )
-          let deviceId = _.get( _.last( device ), 'deviceId' )
-          if( !this.selectedDeviceId && deviceId ) {
-            this.selectedDeviceId = deviceId
+          let lastDeviceId = _.get( _.last( device ), 'deviceId' )
+          if( !this.selectedDeviceId && lastDeviceId ) {
+            this.selectedDeviceId = lastDeviceId
             this.getVideoInput( this.selectedDeviceId )
           }
         } )
