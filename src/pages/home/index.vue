@@ -5,7 +5,7 @@
       <div class="barcode-scan-btn" @click="barcodeScan">바코드 스캔</div>
     </div>
     {{ barcode }}
-    <div class="product-data-area"  v-if="productInfoDataLoaded || nutritionInfoDataLoaded">
+    <div class="product-data-area" v-if="productInfoDataLoaded || nutritionInfoDataLoaded">
       <div class="product-info-area" v-if="productInfoDataLoaded">
         <div v-for="product in productInfoOfBarcode">
           {{ product }}
@@ -77,6 +77,7 @@ export default {
 .home-wrapper {
   height: 100%;
   width: 100%;
+  overflow: hidden;
 
   //background-color: #42b983;
   .barcode-area {
