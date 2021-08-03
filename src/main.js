@@ -5,6 +5,8 @@ import App from './App'
 import router from './router'
 import popupManager from './popupManager'
 
+import '@/assets/css/reset.scss'
+
 Vue.use( popupManager )
 Vue.config.productionTip = false
 

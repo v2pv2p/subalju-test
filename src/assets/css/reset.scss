@@ -1,0 +1,17 @@
+$maxWidth: 420px;
+@media all and (min-width: $maxWidth) {
+  body {
+    font-size: 16px;
+    max-width: $maxWidth;
+    overflow-x: hidden;
+    margin: 0 auto;
+  }
+
+}
+
+// popup 설정 maxWidth 공통으로 지정을 위해 오버라이드 코드 추가
+.popup-anchor {
+  & > *:not(.full-popup) {
+    max-width: $maxWidth !important;
+  }
+}
