@@ -50,13 +50,7 @@ export default {
   },
   methods: {
     getVideoInput( deviceId ) {
-      let constraints
-      if( deviceId ) {
-        constraints = { video: { deviceId: { exact: deviceId } } }
-      } else {
-        constraints = { video: { facingMode: 'environment' } }
-      }
-
+      let constraints = { video: { deviceId: deviceId ? { exact: deviceId } : undefined } }
       navigator.mediaDevices.getUserMedia( constraints )
         .then( stream => {
           if( !deviceId ) {
@@ -77,6 +71,7 @@ export default {
         .then( ( devices ) => {
           let device = _.filter( devices, ( device ) => device.kind === 'videoinput' )
           let lastDeviceId = _.get( _.last( device ), 'deviceId' )
+          alert( lastDeviceId )
           if( !this.selectedDeviceId && lastDeviceId ) {
             this.selectedDeviceId = lastDeviceId
             this.getVideoInput( this.selectedDeviceId )
