@@ -26,12 +26,15 @@ export default {
   color: #2c3e50;
 
   .router {
-    display: flex;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
   }
 
   .popup {
     width: 100%;
     height: 100%;
+    overflow: hidden;
   }
 
 }
