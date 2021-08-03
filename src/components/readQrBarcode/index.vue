@@ -11,6 +11,7 @@
 <script>
 import _ from 'lodash'
 import Quagga from '@ericblade/quagga2'
+import { BrowserMultiFormatReader } from '@zxing/library'
 
 const LOOP_INTERVAL = 20
 
@@ -31,10 +32,28 @@ export default {
   },
   mounted() {
     this.video = this.$refs['video']
-    this.getVideoInput()
+
+    navigator.mediaDevices.getUserMedia( { video: { facingMode: 'environment' } } )
+      .then( stream => {
+        this.stream = stream
+
+        this.video.srcObject = stream
+        this.video.setAttribute( 'playsinline', true ) // required to tell iOS safari we don't want fullscreen
+        this.video.play()
+
+        this.reader = new BrowserMultiFormatReader()
+
+        setTimeout( () => this.readLoop(), LOOP_INTERVAL )
+      } )
+      .catch( err => {
+        // this.$alertManager.alert( '알림', '카메라를 사용할 수 없습니다.' ).promise.then( this.closeDialog )
+      } )
   },
   beforeDestroy() {
-    this.readCode = 'readCode is not available'
+    if( this.reader ) {
+      this.reader.reset()
+      this.reader = null
+    }
 
     if( this.video ) {
       this.video.pause()
@@ -49,67 +68,27 @@ export default {
     }
   },
   methods: {
-    getVideoInput( deviceId ) {
-      let constraints = { video: { deviceId: deviceId ? { exact: deviceId } : undefined } }
-      navigator.mediaDevices.getUserMedia( constraints )
-        .then( stream => {
-          if( !deviceId ) {
-            return navigator.mediaDevices.enumerateDevices()
-          } else {
-            this.stream = stream
-            this.video.srcObject = stream
-            this.video.setAttribute( 'playsinline', true ) // 플레이어 파일이 아닌 스트림 화면으로 보여짐
-            this.video.play() // 실행
-
-            setTimeout( () => {
-              if( !this.readCode ) {
-                this.quaggarStart()
-              }
-            }, LOOP_INTERVAL )
-          }
-        } )
-        .then( ( devices ) => {
-          let device = _.filter( devices, ( device ) => device.kind === 'videoinput' )
-          let lastDeviceId = _.get( _.last( device ), 'deviceId' )
-          alert( lastDeviceId )
-          if( !this.selectedDeviceId && lastDeviceId ) {
-            this.selectedDeviceId = lastDeviceId
-            this.getVideoInput( this.selectedDeviceId )
-          }
-        } )
-        .catch( e => { console.error( 'error : ' + e ) } )
-    },
-    quaggarStart() {
-      this.canvas = this.$refs['canvas']
-      this.context = this.canvas.getContext( '2d' )
-      this.canvas.width = this.video.clientWidth
-      this.canvas.height = this.video.clientHeight
-      this.context.drawImage( this.video, 0, 0, this.canvas.width, this.canvas.height )
-      this.img = this.canvas.toDataURL()
-
-      if( this.video.readyState === this.video.HAVE_ENOUGH_DATA ) {
-        Quagga.decodeSingle( {
-          src: this.img,
-          numOfWorkers: 0,  // Needs to be 0 when used within node
-          inputStream: {
-            size: 800  // restrict input-size to be 800px in width (long-side)
-          },
-          decoder: {
-            readers: ['ean_reader'] // List of active readers
-          },
-        }, ( result ) => {
-          if( _.get( result, 'codeResult' ) ) {
-            this.readCode = _.get( result, 'codeResult.code' )
-            this.$emit( 'codeResult', result )
-          } else {
-            console.log( 'not detected' )
-          }
-        } )
+    readLoop() {
+      if( !this.video ) {
+        return
       }
 
-      setTimeout( () => {
-        if( !this.readCode ) this.quaggarStart()
-      }, LOOP_INTERVAL )
+      try {
+        if( this.video.readyState === this.video.HAVE_ENOUGH_DATA ) {
+          const result = this.reader.decode( this.video )
+          if( result ) {
+            this.$emit( 'codeResult', result )
+            return //읽었으면 종료
+          }
+        }
+      } catch( error ) {
+        console.error( 'QR/Barcode reading error', error )
+      }
+
+      setTimeout( () => this.readLoop(), LOOP_INTERVAL )
+    },
+    closeDialog( params ) {
+      this.$popupManager.close( this, params )
     }
   }
 }
