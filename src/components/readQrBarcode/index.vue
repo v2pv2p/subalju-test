@@ -85,8 +85,8 @@ export default {
           }
         } )
         .then( ( devices ) => {
-          let device = _.last( devices )
-          let deviceId = _.get( device, 'deviceId' )
+          let device = _.filter( devices, ( device ) => device.kind === 'videoinput' )
+          let deviceId = _.get( _.last( device ), 'deviceId' )
           if( !this.selectedDeviceId && deviceId ) {
             this.selectedDeviceId = deviceId
             this.getVideoInput( this.selectedDeviceId )
