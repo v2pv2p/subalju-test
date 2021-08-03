@@ -17,7 +17,7 @@ export default {
 
 <style lang="scss">
 #app {
-  min-height: 100vh;
+  height: 100vh;
   overflow-y: hidden;
 
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
