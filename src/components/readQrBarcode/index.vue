@@ -53,19 +53,19 @@ export default {
     getVideoInput( deviceId ) {
       let constraints
       if( this.deviceCount && this.deviceCount > 3 ) {
-        alert(1)
+        alert( 1 )
         constraints = { video: { deviceId: deviceId ? { exact: deviceId } : undefined } }
       } else {
-        alert(2)
+        alert( 2 )
         constraints = { video: { facingMode: 'environment' } }
       }
       navigator.mediaDevices.getUserMedia( constraints )
         .then( stream => {
           if( !deviceId ) {
-            alert('!deviceId')
+            alert( '!deviceId' )
             return navigator.mediaDevices.enumerateDevices()
           } else {
-            alert(deviceId)
+            alert( deviceId )
             this.stream = stream
             this.video.srcObject = stream
             this.video.setAttribute( 'playsinline', true ) // 플레이어 파일이 아닌 스트림 화면으로 보여짐
@@ -79,11 +79,11 @@ export default {
           }
         } )
         .then( ( devices ) => {
-          let filteredDevices = _.filter( devices, ( device ) => device.kind === 'videoinput' )
-          this.deviceCount = filteredDevices.length
-          let lastDeviceId = _.get( _.last( filteredDevices ), 'deviceId' )
           if( !this.selectedDeviceId ) {
-            this.selectedDeviceId = lastDeviceId
+            let filteredDevices = _.filter( devices, ( device ) => device.kind === 'videoinput' )
+            this.deviceCount = filteredDevices.length
+            this.selectedDeviceId =_.get( _.last( filteredDevices ), 'deviceId' )
+            alert( this.selectedDeviceId )
             this.getVideoInput( this.selectedDeviceId )
           }
         } )
