@@ -53,8 +53,10 @@ export default {
     getVideoInput( deviceId ) {
       let constraints
       if( this.deviceCount && this.deviceCount > 3 ) {
+        alert(1)
         constraints = { video: { deviceId: deviceId ? { exact: deviceId } : undefined } }
       } else {
+        alert(2)
         constraints = { video: { facingMode: 'environment' } }
       }
       navigator.mediaDevices.getUserMedia( constraints )
