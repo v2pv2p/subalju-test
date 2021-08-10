@@ -60,10 +60,10 @@ export default {
         constraints = { video: { facingMode: 'environment' } }
       }
       navigator.mediaDevices.getUserMedia( constraints )
-        .then( stream => {
+        .then( async stream => {
           if( !deviceId ) {
             alert( '!deviceId' )
-            return navigator.mediaDevices.enumerateDevices()
+            return await navigator.mediaDevices.enumerateDevices()
           } else {
             alert( deviceId )
             this.stream = stream
