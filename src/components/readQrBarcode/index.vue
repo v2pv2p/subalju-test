@@ -57,16 +57,17 @@ export default {
       } else {
         constraints = { video: { facingMode: 'environment' } }
       }
+
       navigator.mediaDevices.getUserMedia( constraints )
         .then( stream => {
+          this.stream = stream
+          this.video.srcObject = stream
+          this.video.setAttribute( 'playsinline', true ) // 플레이어 파일이 아닌 스트림 화면으로 보여짐
+          this.video.play() // 실행
+          
           if( !this.selectedDeviceId ) {
             return navigator.mediaDevices.enumerateDevices()
           } else {
-            this.stream = stream
-            this.video.srcObject = stream
-            this.video.setAttribute( 'playsinline', true ) // 플레이어 파일이 아닌 스트림 화면으로 보여짐
-            this.video.play() // 실행
-
             setTimeout( () => {
               if( !this.readCode ) {
                 this.quaggarStart()
