@@ -51,12 +51,12 @@ export default {
   methods: {
     async getVideoInput() {
       this.video = this.$refs['video']
+
       await navigator.mediaDevices.enumerateDevices().then( ( devices ) => {
         this.lastDevice = _.chain( devices )
           .filter( device => device.kind === 'videoinput' )
           .last()
           .value()
-        console.log( this.lastDevice )
       } )
 
       const constraints = { video: { deviceId: this.lastDevice.deviceId ? { exact: this.lastDevice.deviceId } : undefined } }
@@ -68,9 +68,7 @@ export default {
           this.video.play() // 실행
 
           setTimeout( () => {
-            if( !this.readCode ) {
-              this.quaggarStart()
-            }
+            if( !this.readCode ) this.quaggarStart()
           }, LOOP_INTERVAL )
         } )
     },
@@ -96,8 +94,6 @@ export default {
           if( _.get( result, 'codeResult' ) ) {
             this.readCode = _.get( result, 'codeResult.code' )
             this.$emit( 'codeResult', result )
-          } else {
-            console.log( 'not detected' )
           }
         } )
       }
@@ -118,17 +114,6 @@ export default {
   height: 100%;
 
   overflow: hidden;
-
-  .device-select-area {
-    top: 0;
-
-    .device-select-title {
-    }
-
-    .device-select {
-
-    }
-  }
 
   .stream-area {
     width: 100%;
