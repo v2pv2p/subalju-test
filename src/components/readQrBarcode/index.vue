@@ -61,11 +61,11 @@ export default {
       }
       navigator.mediaDevices.getUserMedia( constraints )
         .then( async stream => {
-          if( !deviceId ) {
+          if( !this.selectedDeviceId ) {
             alert( '!deviceId' )
             return await navigator.mediaDevices.enumerateDevices()
           } else {
-            alert( deviceId )
+            alert( 3 +this.selectedDeviceId )
             this.stream = stream
             this.video.srcObject = stream
             this.video.setAttribute( 'playsinline', true ) // 플레이어 파일이 아닌 스트림 화면으로 보여짐
